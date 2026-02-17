@@ -25,7 +25,7 @@
                 </a>
                 <a href="#"
                     class="inline-flex items-center mt-20 justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-[#fb5607] 
-                    rounded-lg hover:bg-[#fb5607] focus:ring-4 focus:ring-gray-100 dark:text-dark-blue dark:border-[#fb5607] dark:hover:bg-[#fb5407c5] dark:focus:ring-gray-800">
+                    rounded-lg hover:bg-     focus:ring-4 focus:ring-gray-100 dark:text-dark-blue dark:border-[#fb5607] dark:hover:bg-[#fb5407c5] dark:focus:ring-gray-800">
                     Ver herramientas disponibles
                 </a>
             </div>

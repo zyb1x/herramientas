@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+
+    public function create()
+    {
+        return view('login.formulario-crear');
+    }
+
     public function showLoginForm()
     {
         return view('login.login');

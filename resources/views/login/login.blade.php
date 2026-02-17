@@ -53,7 +53,7 @@
                         <button type="submit"
                             class="w-full text-white bg-[#fb5607] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300
                             font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#fb5607] dark:hover:bg-primary-700 dark:focus:ring-primary-800">Iniciar sesión</button>
-                        <a href="#"
+                        <a href="{{ route('registro') }}"
                             class="font-medium text-[#fb5607] hover:underline dark:text-primary-500">Registrate</a>
 
                     </form>
