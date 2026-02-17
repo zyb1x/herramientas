@@ -7,7 +7,7 @@
 
     <section class="bg-gray-50 dark:white">
         <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-            
+
             <div
                 class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-[#023047] dark:border-gray-700">
                 <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -46,16 +46,22 @@
 
                                 </div>
                             </div>
-                            <a href="#"
-                                class="text-sm font-medium text-[#fb5607] hover:underline dark:text-primary-500">¿Olvidaste
-                                tu contraseña?</a>
                         </div>
                         <button type="submit"
                             class="w-full text-white bg-[#fb5607] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300
-                            font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#fb5607] dark:hover:bg-primary-700 dark:focus:ring-primary-800">Iniciar sesión</button>
-                        <a href="{{ route('registro') }}"
-                            class="font-medium text-[#fb5607] hover:underline dark:text-primary-500">Registrate</a>
+                            font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#fb5607] dark:hover:bg-primary-700 dark:focus:ring-primary-800">Iniciar
+                            sesión</button>
 
+                        <div class="flex items-center my-2">
+                            <hr class="flex-grow border-gray-300 dark:border-gray-600">
+                            <span class="mx-3 text-sm text-gray-500 dark:text-gray-400">o</span>
+                            <hr class="flex-grow border-gray-300 dark:border-gray-600">
+                        </div>
+                    </form>
+                    <form action="{{ route('registro') }}" method="GET">
+                        <button type="submit"
+                            class="w-full text-[#fb5607] bg-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300
+                            font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:hover:bg-primary-700 dark:focus:ring-primary-800">Registrate</button>
                     </form>
                 </div>
             </div>

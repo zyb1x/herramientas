@@ -414,8 +414,8 @@
                 @endif
                 @if ($isRegistroPage)
                     <a href="{{ route('login') }}"
-                        class="ml-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">Iniciar
-                        sesion</a>
+                        class="ml-2 text-gray-500 hover:text-[#fb5607] dark:text-gray-400 dark:hover:text-[#fb5607]">Iniciar
+                        sesión</a>
                 @endif
             </div>
         </nav>
