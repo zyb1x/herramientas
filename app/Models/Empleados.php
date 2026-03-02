@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,19 +9,23 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Empleados extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable, HasApiTokens;
 
     protected $table = 'Empleados';
-
+    protected $primaryKey = 'id_empleado';
     public $timestamps = false;
 
     protected $fillable = [
         'nombre',
+        'apellido_p',
+        'apellido_m',
         'correo',
+        'usuario',
         'contrasena',
         'puesto',
-        'linea_produccion',
+        'area',
         'turno',
+        'imagen'
     ];
 
     public function getAuthPassword()
@@ -28,13 +33,14 @@ class Empleados extends Authenticatable
         return $this->contrasena;
     }
 
-    
+
     public function getEmailForPasswordReset()
     {
         return $this->correo;
     }
 
+    public function getRememberTokenName()
+    {
+        return null; // ← le dice a Laravel que no use remember_token
+    }
 }
-
-
-?>

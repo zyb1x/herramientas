@@ -49,7 +49,7 @@ return [
         'empleados' => [
             'driver' => 'session',
             'provider' => 'empleados',
-        ],
+        ], 
     ],
 
     /*
