@@ -9,6 +9,8 @@ use App\Models\Empleados;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
+
+
 Route::get('inicio', function () {
     return view('inicio.inicio');
 })->middleware(['auth', 'verified'])->name('inicio');
@@ -24,7 +26,7 @@ Route::get('auth/google', function () {
 
 Route::get('/auth/google/callback', function () {
     try {
-        $googleUser = Socialite::driver('google')->user();
+        $googleUser = Socialite::driver('google')->stateless()->user();
         $empleado = Empleados::where('correo', $googleUser->getEmail())->first();
 
         if (!$empleado) {
@@ -40,7 +42,7 @@ Route::get('/auth/google/callback', function () {
         Auth::guard('empleados')->login($empleado);
         return redirect()->route('inicio');
     } catch (Exception $e) {
-        // dd($e->getMessage());
+        dd($e->getMessage());
         return redirect()->route('login')->withErrors(['error' => 'Error al iniciar sesión con Google. Por favor, inténtalo de nuevo.']);
     }
 });

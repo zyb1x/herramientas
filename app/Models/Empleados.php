@@ -14,6 +14,8 @@ class Empleados extends Authenticatable
     protected $table = 'Empleados';
     protected $primaryKey = 'id_empleado';
     public $timestamps = false;
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = [
         'nombre',
