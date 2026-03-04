@@ -35,8 +35,8 @@ Route::get('/auth/google/callback', function () {
                 'apellido_p' => 'Google',   // valor por defecto
                 'correo'     => $googleUser->getEmail(),
                 'contrasena' => Hash::make(Str::random(16)),
-                'puesto'     => 'Empleado',
-                'turno'      => 'Matutino',
+                'puesto'     => 'Empleado',// valor por defecto
+                'turno'      => 'Matutino',// valor por defecto
             ]);
         }
         Auth::guard('empleados')->login($empleado);
@@ -47,16 +47,16 @@ Route::get('/auth/google/callback', function () {
     }
 });
 
-//rutas de autenticacion
+
 Route::middleware('auth:empleados')->group(function () {
 
-    //inicio
+    
     Route::get('/inicio', function () {
         return view('inicio.inicio');
     })->name('inicio');
 
 
-    //cerrar sesion
+    
     Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
 });
 
