@@ -6,6 +6,7 @@ use App\Http\Controllers\EmpleadosController;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\Empleados;
+use App\Models\Usuarios;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
@@ -28,19 +29,19 @@ Route::get('auth/google', function () {
 Route::get('/auth/google/callback', function () {
     try {
         $googleUser = Socialite::driver('google')->stateless()->user();
-        $empleado = Empleados::where('correo', $googleUser->getEmail())->first();
+        $usuario = Usuarios::where('correo', $googleUser->getEmail())->first();
 
-        if (!$empleado) {
-            $empleado = Empleados::create([
+        if (!$usuario) {
+            $usuario = Usuarios::create([
                 'nombre'     => $googleUser->getName(),
-                'apellido_p' => 'Google',   // valor por defecto
-                'correo'     => $googleUser->getEmail(),
+                'correo' => $googleUser->getEmail(),   // valor por defecto
+                'usuario'     => $googleUser->getEmail(),
                 'contrasena' => Hash::make(Str::random(16)),
-                'puesto'     => 'Empleado',// valor por defecto
+                'rol'     => 'Almacenista',// valor por defecto
                 'turno'      => 'Matutino',// valor por defecto
             ]);
         }
-        Auth::guard('empleados')->login($empleado);
+        Auth::guard('usuarios')->login($usuario);
         return redirect()->route('inicio');
     } catch (Exception $e) {
         dd($e->getMessage());
@@ -49,7 +50,7 @@ Route::get('/auth/google/callback', function () {
 });
 
 
-Route::middleware('auth:empleados')->group(function () {
+Route::middleware('auth:usuarios')->group(function () {
 
     
     Route::get('/inicio', function () {

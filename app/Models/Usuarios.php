@@ -13,12 +13,19 @@ class Usuarios extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'Usuarios';
-
+    // protected $primaryKey = 'id_usuario'; se cambio en la base de datos a id
+    public $incrementing = true;
+    protected $keyType = 'int';
     public $timestamps = false;
    
     protected $fillable = [
+        'nombre',
         'correo',
+        'usuario',
         'contrasena',
+        'rol',
+        'turno',
+        'imagen',
     ];
 
     public function getAuthPassword()

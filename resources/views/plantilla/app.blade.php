@@ -39,10 +39,10 @@
                         </svg>
                         <span class="sr-only">Toggle sidebar</span>
                     </button>
-                    <a href="https://flowbite.com" class="flex mr-4">
+                    <a href="{{ route('inicio') }}" class="flex mr-4">
                         {{-- <img src="https://flowbite.s3.amazonaws.com/logo.svg" class="mr-3 h-8" alt="FlowBite Logo" /> --}}
                         <span
-                            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Herramientas</span>
+                            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Electronic´s component</span>
                     </a>
                     @if (!$isLoginPage )
                         <form action="#" method="GET" class="hidden lg:block lg:pl-2">
@@ -431,7 +431,7 @@
             <a href="#"
                 class="flex justify-center items-center text-2xl font-semibold text-gray-900 dark:text-white">
                 <img src="{{ asset('storage/img/logo_herramientas.png') }}" alt="logo" class="h-15 w-auto mr-2">
-                Herramientas
+                Electronic's component
             </a>
             <p class="my-6 text-gray-500 dark:text-gray-400"></p>
             <ul class="flex flex-wrap justify-center items-center mb-6 text-gray-900 dark:text-white">

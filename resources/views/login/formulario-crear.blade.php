@@ -21,33 +21,26 @@
                 <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
 
                     <div class="sm:col-span-2">
-                        <label for="name"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombres</label>
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre
+                            Completo</label>
                         <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Nombre(s)" required="">
+                            placeholder="Nombre Completo" required="">
                     </div>
                     <div>
-                        <label for="paterno" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apellido
-                            Paterno</label>
-                        <input type="text" name="apellido_p" id="apellido_p" value="{{ old('apellido_p') }}"
+                        <label for="paterno" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Correo
+                            Electrónico</label>
+                        <input type="text" name="correo" id="correo" value="{{ old('correo') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Apellido Paterno" required="">
+                            placeholder="ejemplo@dominio.com" required="">
                     </div>
 
                     <div>
-                        <label for="materno" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apellido
-                            Materno</label>
-                        <input type="text" name="apellido_m" id="apellido_m" value="{{ old('apellido_m') }}"
+                        <label for="materno" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Usuario
+                        </label>
+                        <input type="text" name="usuario" id="usuario" value="{{ old('usuario') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Apellido Materno" required="">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="correo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Correo
-                            Electrónico</label>
-                        <input type="email" name="correo" id="correo" value="{{ old('correo') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="ejemplo@dominio.com" required="">
+                            placeholder="Usuario" required="">
                     </div>
                     <div>
                         <label for="contraseña"
@@ -66,18 +59,15 @@
                             placeholder="Confirmar Contraseña" required="">
                     </div>
                     <div>
-                        <label for="puesto"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Puesto</label>
-                        <input type="text" name="puesto" id="puesto"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Puesto" value="{{ old('puesto') }}" required="">
-                    </div>
-                    <div>
-                        <label for="area"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Área</label>
-                        <input type="text" name="area" id="area"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Área" value="{{ old('area') }}" required="">
+                        <label for="rol"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rol</label>
+                        <select name="rol" id="rol" value="{{ old('rol') }}"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <option selected="">Selecciona el rol</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Almacenista">Almacenista</option>
+                            {{-- <option value="Nocturno">Nocturno</option> --}}
+                        </select>
                     </div>
 
                     <!-- Categoría y peso - cada uno en su columna -->
@@ -90,7 +80,6 @@
                             <option value="Matutino">Matutino</option>
                             <option value="Vespertino">Vespertino</option>
                             <option value="Nocturno">Nocturno</option>
-
                         </select>
                     </div>
                     <!-- Descripción - ocupa ambas columnas -->
