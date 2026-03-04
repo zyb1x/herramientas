@@ -23,14 +23,14 @@
                     <div class="sm:col-span-2">
                         <label for="name"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombres</label>
-                        <input type="text" name="nombre" id="nombre"
+                        <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder="Nombre(s)" required="">
                     </div>
                     <div>
                         <label for="paterno" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apellido
                             Paterno</label>
-                        <input type="text" name="apellido_p" id="apellido_p"
+                        <input type="text" name="apellido_p" id="apellido_p" value="{{ old('apellido_p') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder="Apellido Paterno" required="">
                     </div>
@@ -38,14 +38,14 @@
                     <div>
                         <label for="materno" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apellido
                             Materno</label>
-                        <input type="text" name="apellido_m" id="apellido_m"
+                        <input type="text" name="apellido_m" id="apellido_m" value="{{ old('apellido_m') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder="Apellido Materno" required="">
                     </div>
                     <div class="sm:col-span-2">
                         <label for="correo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Correo
                             Electrónico</label>
-                        <input type="email" name="correo" id="correo"
+                        <input type="email" name="correo" id="correo" value="{{ old('correo') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder="ejemplo@dominio.com" required="">
                     </div>
@@ -70,21 +70,21 @@
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Puesto</label>
                         <input type="text" name="puesto" id="puesto"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Puesto" required="">
+                            placeholder="Puesto" value="{{ old('puesto') }}" required="">
                     </div>
                     <div>
                         <label for="area"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Área</label>
                         <input type="text" name="area" id="area"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Área" required="">
+                            placeholder="Área" value="{{ old('area') }}" required="">
                     </div>
 
                     <!-- Categoría y peso - cada uno en su columna -->
                     <div>
                         <label for="turno"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Turno</label>
-                        <select name="turno" id="turno"
+                        <select name="turno" id="turno" value="{{ old('turno') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                             <option selected="">Selecciona el turno</option>
                             <option value="Matutino">Matutino</option>
