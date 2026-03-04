@@ -13,8 +13,9 @@
 
     @php
         $currentRoute = request()->route()->getName();
-        $isLoginPage = $currentRoute === 'login' || $currentRoute === 'registro';
+        $isLoginPage = $currentRoute === 'login' || $currentRoute === 'registro' || $currentRoute === 'aviso.privacidad';
         $isRegistroPage = $currentRoute === 'registro';
+        $isAvisoPage = $currentRoute === 'aviso.privacidad';
     @endphp
 
     <header class="antialiased">
@@ -43,7 +44,7 @@
                         <span
                             class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Herramientas</span>
                     </a>
-                    @if (!$isLoginPage)
+                    @if (!$isLoginPage )
                         <form action="#" method="GET" class="hidden lg:block lg:pl-2">
                             <label for="topbar-search" class="sr-only">Buscar herramientas</label>
                             <div class="relative mt-1 lg:w-96">
@@ -412,7 +413,7 @@
 
                         </div>
                 @endif
-                @if ($isRegistroPage)
+                @if ($isRegistroPage || $isAvisoPage)
                     <a href="{{ route('login') }}"
                         class="ml-2 text-gray-500 hover:text-[#fb5607] dark:text-gray-400 dark:hover:text-[#fb5607]">Iniciar
                         sesión</a>
