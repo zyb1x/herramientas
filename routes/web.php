@@ -19,6 +19,7 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::get('/registro', [LoginController::class, 'create'])->name('registro');
 Route::post('/registro/store', [LoginController::class, 'store'])->name('registro.store');
+Route::view('/aviso-de-privacidad', 'aviso_de_privacidad.aviso')->name('aviso.privacidad');
 
 Route::get('auth/google', function () {
     return Socialite::driver('google')->redirect();

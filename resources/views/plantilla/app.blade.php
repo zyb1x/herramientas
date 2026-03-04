@@ -432,8 +432,7 @@
                 <img src="{{ asset('storage/img/logo_herramientas.png') }}" alt="logo" class="h-15 w-auto mr-2">
                 Herramientas
             </a>
-            <p class="my-6 text-gray-500 dark:text-gray-400">Open-source library of over 400+ web components and
-                interactive elements built for better web.</p>
+            <p class="my-6 text-gray-500 dark:text-gray-400"></p>
             <ul class="flex flex-wrap justify-center items-center mb-6 text-gray-900 dark:text-white">
                 {{-- <li>
                     <a href="#" class="mr-4 hover:underline md:mr-6 ">About</a>
@@ -454,7 +453,7 @@
                     <a href="#" class="mr-4 hover:underline md:mr-6">FAQs</a>
                 </li> --}}
                 <li>
-                    <a href="#" class="mr-4 hover:underline md:mr-6">Aviso de privacidad</a>
+                    <a href="{{ route('aviso.privacidad') }}" class="mr-4 hover:underline md:mr-6">Aviso de privacidad</a>
                 </li>
             </ul>
 
