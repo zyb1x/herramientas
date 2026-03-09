@@ -1,12 +1,12 @@
 @extends('plantilla.app')
 
-@section('titulo', 'login registro')
+@section('titulo', 'registro')
 
 @section('contenido')
 
     <section class="bg-white dark:bg-White">
         <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16 bg-[#023047] rounded-lg shadow dark:bg-[#023047] mt-8 mb-10">
-            <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Registrate</h2>
+            <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Regístrate</h2>
             @if ($errors->any())
                 <div class="bg-red-500 text-white p-4 rounded-lg mb-4">
                     <ul class="list-disc list-inside">
@@ -32,7 +32,7 @@
                             Electrónico</label>
                         <input type="text" name="correo" id="correo" value="{{ old('correo') }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="ejemplo@dominio.com" required="">
+                            placeholder="ejemplo@herramientas.com" required="">
                     </div>
 
                     <div>
@@ -47,7 +47,7 @@
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contraseña</label>
                         <input type="password" name="contrasena" id="contrasena"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Contraseña" required="">
+                            placeholder="••••••••" required="">
                     </div>
 
                     <div>
@@ -56,7 +56,7 @@
                             Contraseña</label>
                         <input type="password" name="conf_contrasena" id="conf_contraseña"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Confirmar Contraseña" required="">
+                            placeholder="••••••••" required="">
                     </div>
                     <div>
                         <label for="rol"
@@ -66,11 +66,10 @@
                             <option selected="">Selecciona el rol</option>
                             <option value="Administrador">Administrador</option>
                             <option value="Almacenista">Almacenista</option>
-                            {{-- <option value="Nocturno">Nocturno</option> --}}
                         </select>
                     </div>
 
-                    <!-- Categoría y peso - cada uno en su columna -->
+                   
                     <div>
                         <label for="turno"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Turno</label>
@@ -94,7 +93,7 @@
 
                 <button type="submit"
                     class="w-full text-white bg-[#fb5607] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#fb5607] mt-10 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                    Registrarse
+                    Continuar
                 </button>
             </form>
         </div>
