@@ -32,6 +32,8 @@ class LoginController extends Controller
             ],
             [
                 'nombre.required' => 'El nombre es obligatorio.',
+                'usuario.required' => 'El nombre de usuario es obligatorio.',
+                'usuario.unique' => 'Ya existe un empleado con ese nombre de usuario.',
                 'correo.required' => 'El correo electrónico es obligatorio.',
                 'correo.email' => 'El correo electrónico debe ser una dirección válida.',
                 'correo.unique' => 'Ya existe un empleado con ese correo electrónico.',
