@@ -7,6 +7,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Models\Usuarios;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 // Rutas publicas
@@ -64,3 +65,9 @@ Route::middleware('auth:usuarios')->group(function () {
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+
+Route::get('/aviso-de-privacidad/pdf', function () {
+    $pdf = Pdf::loadView('aviso_de_privacidad.pdf'); // <- busca aviso_de_privacidad/pdf.blade.php
+    return $pdf->download('aviso_de_privacidad.pdf');
+})->name('aviso.privacidad.pdf');
