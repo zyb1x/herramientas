@@ -26,9 +26,9 @@ class LoginController extends Controller
                 'usuario' => 'required|unique:Usuarios,usuario,correo',
                 'contrasena' => 'required|min:6',
                 'conf_contrasena' => 'required|same:contrasena',
-                'rol' => 'required',
-                'turno' => 'required',
-                'imagen' => 'nullable|image|max:2048'
+                'rol'   => 'required|in:Administrador,Almacenista',
+                'turno' => 'required|in:Matutino,Vespertino,Nocturno',
+                'imagen' => 'required|nullable|max:2048|mimes:jpeg,png,jpg'
             ],
             [
                 'nombre.required' => 'El nombre es obligatorio.',
@@ -42,9 +42,12 @@ class LoginController extends Controller
                 'conf_contrasena.required' => 'La confirmación de la contraseña es obligatoria.',
                 'conf_contrasena.same' => 'Las contraseñas no coinciden.',
                 'rol.required' => 'El rol es obligatorio.',
+                'rol.in'       => 'Debes seleccionar un rol válido.',
                 'turno.required' => 'El turno es obligatorio.',
-                // 'imagen.image' => 'El archivo debe ser una imagen.',
-                // 'imagen.max' => 'La imagen no debe superar los 2MB.'
+                'turno.in'       => 'Debes seleccionar un turno válido.',
+                'imagen.required' => 'La imagen es obligatoria.',
+                'imagen.max' => 'La imagen no debe superar los 2MB.',
+                'imagen.mimes' => 'La imagen debe ser un archivo de tipo: jpeg, png, jpg.'
             ]
         );
 
