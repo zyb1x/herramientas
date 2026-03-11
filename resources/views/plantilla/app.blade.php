@@ -25,7 +25,7 @@
 
                 {{-- Lado izquierdo: toggle sidebar + logo + buscador --}}
                 <div class="flex justify-start items-center">
-                    <button id="toggleSidebar" aria-expanded="true" aria-controls="sidebar"
+                   {{--tton id="toggleSidebar" aria-expanded="true" aria-controls="sidebar"
                         class="hidden p-2 mr-3 text-gray-600 rounded cursor-pointer lg:inline hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700">
                         <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 16 12">
@@ -42,11 +42,11 @@
                                 d="M1 1h15M1 7h15M1 13h15" />
                         </svg>
                         <span class="sr-only">Toggle sidebar</span>
-                    </button>
+                    </button> --}}
 
                     <a href="{{ route('inicio') }}" class="flex mr-4">
                         <span
-                            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Herramientas</span>
+                            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Grupo Electric's Components</span>
                     </a>
 
                     @if (!$isLoginPage)
