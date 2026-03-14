@@ -17,6 +17,13 @@ Route::get('/registro', [LoginController::class, 'create'])->name('registro');
 Route::post('/registro/store', [LoginController::class, 'store'])->name('registro.store');
 Route::view('/aviso-de-privacidad', 'aviso_de_privacidad.aviso')->name('aviso.privacidad');
 
+// Rutas de herramientas
+Route::prefix('herramientas')->group(function () {
+    Route::get('/', [App\Http\Controllers\HerramientasController::class, 'index'])->name('herramientas.index');
+    Route::get('/registro', [App\Http\Controllers\HerramientasController::class, 'create'])->name('herramientas.create');
+    Route::post('/store', [App\Http\Controllers\HerramientasController::class, 'store'])->name('herramientas.store');
+});
+
 // Google Auth
 Route::get('auth/google', function () {
     return Socialite::driver('google')->redirect();
