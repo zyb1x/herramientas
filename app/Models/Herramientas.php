@@ -17,8 +17,8 @@ class Herramientas extends Model
         'id_categoria',
         'nombre_herramienta',
         'existencia',
-        // 'estado',
-        // 'disponible',
+        'estado',
+        'disponible',
         'imagen',
     ];
 

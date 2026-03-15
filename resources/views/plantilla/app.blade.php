@@ -72,6 +72,39 @@
                 @if (!$isLoginPage)
                     <div class="flex items-center gap-2 lg:order-2">
 
+                        <ul>
+                            <li class="relative">
+                                <button id="dropdownHerramientasButton" data-dropdown-toggle="dropdownHerramientas"
+                                    data-dropdown-placement="bottom"
+                                    class="flex items-center justify-between w-full py-2 px-3 rounded font-medium text-white md:w-auto
+                            hover:bg-orange-500 md:hover:bg-transparent md:border-0 md:hover:text-orange-500 md:p-0 duration-200">
+                                    Herramientas
+                                    <svg class="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                        width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2" d="m19 9-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <!-- Dropdown menu -->
+                                <div id="dropdownHerramientas"
+                                    class="z-10 absolute hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
+                                    <ul class="p-2 text-sm text-body font-medium"
+                                        aria-labelledby="dropdownHerramientasButton">
+
+                                        <li>
+                                            <a href="/herramientas/registro"
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Registro</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="/herramientas/listado"
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Listado</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+
                         {{-- Botón solicitar herramienta --}}
                         <button type="button"
                             class="hidden sm:inline-flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
@@ -82,6 +115,7 @@
                             </svg>
                             Solicitar Herramienta
                         </button>
+
 
                         {{-- Avatar del usuario con dropdown --}}
                         @auth('usuarios')

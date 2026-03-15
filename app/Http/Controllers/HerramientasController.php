@@ -14,6 +14,11 @@ class HerramientasController extends Controller
         return view('herramientas.herramientas', compact('herramientas'));
     }
 
+    public function listado(){
+        $herramientas = Herramientas::all();
+        return view('herramientas.listado', compact('herramientas'));
+    }
+
     public function create()
     {
         $categorias = Categoria::all();
@@ -61,7 +66,7 @@ class HerramientasController extends Controller
             $herramienta->save();
         }
 
-        return redirect()->route('herramientas.index')->with('success', 'Herramienta añadida exitosamente.');
+        return redirect()->route('herramientas.listado')->with('success', 'Herramienta añadida exitosamente.');
     }
 
     public function edit($id)
@@ -110,7 +115,7 @@ class HerramientasController extends Controller
 
         $herramienta->save();
 
-        return redirect()->route('herramientas.index')->with('success', 'Herramienta actualizada exitosamente.');
+        return redirect()->route('herramientas.listado')->with('success', 'Herramienta actualizada exitosamente.');
     }
 
     public function destroy($id)
@@ -120,9 +125,9 @@ class HerramientasController extends Controller
         if ($herramienta) {
             $herramienta->update(['disponible' => 0]);
 
-            return redirect()->route('herramientas.index')->with('success', 'Estatus cambiado a no disponible exitosamente.');
+            return redirect()->route('herramientas.listado')->with('success', 'Estatus cambiado a no disponible exitosamente.');
         }
 
-        return redirect()->route('herramientas.index')->with('error', 'Herramienta no encontrada.');
+        return redirect()->route('herramientas.listado')->with('error', 'Herramienta no encontrada.');
     }
 }
