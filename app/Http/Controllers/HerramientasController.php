@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Categoria;
 use App\Models\Herramientas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class HerramientasController extends Controller
 {
@@ -14,7 +15,8 @@ class HerramientasController extends Controller
         return view('herramientas.herramientas', compact('herramientas'));
     }
 
-    public function listado(){
+    public function listado()
+    {
         $herramientas = Herramientas::all();
         return view('herramientas.listado', compact('herramientas'));
     }
@@ -34,7 +36,7 @@ class HerramientasController extends Controller
                 'existencia' => 'required|integer',
                 // 'estado' => 'required',
                 // 'disponible' => 'required',
-                'imagen' => 'nullable|image|max:2048|mimes:jpeg,png,jpg'
+                'imagen' => 'required|image|max:2048|mimes:jpeg,png,jpg'
             ],
             [
                 'id_categoria.required' => 'La categoría es obligatoria.',
@@ -43,6 +45,7 @@ class HerramientasController extends Controller
                 // 'existencia.integer' => 'La existencia debe ser un número entero.',
                 // 'estado.required' => 'El estado es obligatorio.',
                 'disponible.required' => 'La disponibilidad es obligatoria.',
+                'imagen.required' => 'La imagen es obligatoria.',
                 'imagen.mimes' => 'El archivo debe ser una imagen.',
                 'imagen.max' => 'La imagen no debe superar los 2MB.'
             ]
@@ -82,35 +85,40 @@ class HerramientasController extends Controller
 
         $request->validate(
             [
-                'id_categoria' => 'required',
+                'id_categoria'       => 'required',
                 'nombre_herramienta' => 'required',
-                'existencia' => 'required|integer',
-                'estado' => 'required',
-                'disponible' => 'required',
-                'imagen' => 'nullable|mimes:jpeg,png,jpg'
+                'existencia'         => 'required|integer',
+                'imagen'             => 'nullable|mimes:jpeg,png,jpg|max:2048'
+                // estado y disponible eliminados porque no están en el form
             ],
             [
-                'id_categoria.required' => 'La categoría es obligatoria.',
+                'id_categoria.required'       => 'La categoría es obligatoria.',
                 'nombre_herramienta.required' => 'El nombre de la herramienta es obligatorio.',
-                'existencia.required' => 'La existencia es obligatoria.',
-                'existencia.integer' => 'La existencia debe ser un número entero.',
-                'estado.required' => 'El estado es obligatorio.',
-                'disponible.required' => 'La disponibilidad es obligatoria.',
-                'imagen.mimes' => 'La imagen debe ser un archivo de tipo: jpeg, png, jpg.'
+                'existencia.required'         => 'La existencia es obligatoria.',
+                'existencia.integer'          => 'La existencia debe ser un número entero.',
+                'imagen.mimes'                => 'La imagen debe ser un archivo de tipo: jpeg, png, jpg.',
+                'imagen.max'                  => 'La imagen no debe superar los 2MB.'
             ]
         );
 
-        $herramienta->id_categoria = $request->id_categoria;
+        $herramienta->id_categoria       = $request->id_categoria;
         $herramienta->nombre_herramienta = $request->nombre_herramienta;
-        $herramienta->existencia = $request->existencia;
-        $herramienta->estado = $request->estado;
-        $herramienta->disponible = $request->disponible;
+        $herramienta->existencia         = $request->existencia;
 
-        if ($request->has('imagen')) {
-            $imagen = $request->imagen;
-            $nuevo_nombre = 'herramienta_' . $herramienta->id . '.jpg';
-            $ruta = $imagen->storeAs('imagenes/herramientas', $nuevo_nombre, 'public');
+        if ($request->hasFile('imagen')) {
+            if ($herramienta->imagen && !str_contains($herramienta->imagen, 'producto_default')) {
+                $ruta_anterior = str_replace('/storage/', '', $herramienta->imagen);
+                Storage::disk('public')->delete($ruta_anterior);
+            }
+            $nuevo_nombre = 'herramienta_' . $id . '.jpg';
+            $ruta = $request->file('imagen')->storeAs('imagenes/herramientas', $nuevo_nombre, 'public');
             $herramienta->imagen = '/storage/' . $ruta;
+        } elseif ($request->input('eliminar_imagen') == '1') {
+            if ($herramienta->imagen && !str_contains($herramienta->imagen, 'herramienta_default')) {
+                $ruta_anterior = str_replace('/storage/', '', $herramienta->imagen);
+                Storage::disk('public')->delete($ruta_anterior);
+            }
+            $herramienta->imagen = '/imagenes/herramientas/producto_default.png';
         }
 
         $herramienta->save();

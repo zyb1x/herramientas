@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HerramientasController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,8 @@ Route::prefix('herramientas')->group(function () {
     Route::get('/', [App\Http\Controllers\HerramientasController::class, 'index'])->name('herramientas.index');
     Route::get('/registro', [App\Http\Controllers\HerramientasController::class, 'create'])->name('herramientas.create');
     Route::post('/store', [App\Http\Controllers\HerramientasController::class, 'store'])->name('herramientas.store');
-    Route::post('/edit', [App\Http\Controllers\HerramientasController::class, 'edit'])->name('herramientas.edit');
+    Route::get('/{id_herramienta}/edit', [App\Http\Controllers\HerramientasController::class, 'edit'])->name('herramientas.edit');
+    Route::post('/{id_herramienta}/actualizar', [HerramientasController::class, 'update'])->name('herramientas.update');
     Route::post('/show', [App\Http\Controllers\HerramientasController::class, 'show'])->name('herramientas.show');
     Route::delete('/destroy/{id_herramienta}', [App\Http\Controllers\HerramientasController::class, 'destroy'])->name('herramientas.destroy');
     Route::get('/listado', [App\Http\Controllers\HerramientasController::class, 'listado'])->name('herramientas.listado');
