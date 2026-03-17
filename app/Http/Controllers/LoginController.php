@@ -85,13 +85,17 @@ class LoginController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+        ],
+        [
+            'email.required' => 'Ingrese un correo válido.',
+            'password.required' => 'Ingrese una contraseña válida.'
         ]);
 
         $usuario = Usuarios::where('correo', $request->email)->first();
 
         if (!$usuario) {
             return back()->withErrors([
-                'error' => 'No existe una cuenta con ese correo electrónico.'
+                'error' => 'Credenciales incorrectas'
             ])->withInput();
         }
 

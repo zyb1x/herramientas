@@ -9,15 +9,42 @@ use Illuminate\Support\Facades\Storage;
 
 class HerramientasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $herramientas = Herramientas::all();
+        $query = Herramientas::query();
+
+        if ($request->filled('q')) {
+            $query->where('nombre_herramienta', 'like', '%' . $request->q . '%');
+        }
+
+        $herramientas = $query->get();
+
         return view('herramientas.herramientas', compact('herramientas'));
     }
 
-    public function listado()
+    public function buscar(Request $request)
     {
-        $herramientas = Herramientas::all();
+        $herramientas = Herramientas::query()
+            ->when($request->filled('q'), function ($query) use ($request) {
+                $query->where('nombre_herramienta', 'like', '%' . $request->q . '%');
+            })
+            ->get();
+
+        return response()->json($herramientas);
+    }
+
+    public function listado(Request $request)
+    {
+        $query = Herramientas::query();
+
+        if ($request->filled('q')) {
+            $query->where('nombre_herramienta', 'like', '%' . $request->q . '%');
+            // Agrega más columnas si quieres buscar en más campos:
+            // ->orWhere('descripcion', 'like', '%' . $request->q . '%')
+        }
+
+        $herramientas = $query->get();
+
         return view('herramientas.listado', compact('herramientas'));
     }
 

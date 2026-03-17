@@ -3,6 +3,7 @@
 use App\Http\Controllers\HerramientasController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MaterialesController;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\Usuarios;
@@ -20,6 +21,7 @@ Route::view('/aviso-de-privacidad', 'aviso_de_privacidad.aviso')->name('aviso.pr
 
 // Rutas de herramientas
 Route::prefix('herramientas')->group(function () {
+    Route::get('/herramientas/buscar', [HerramientasController::class, 'buscar'])->name('herramientas.buscar');
     Route::get('/', [App\Http\Controllers\HerramientasController::class, 'index'])->name('herramientas.index');
     Route::get('/registro', [App\Http\Controllers\HerramientasController::class, 'create'])->name('herramientas.create');
     Route::post('/store', [App\Http\Controllers\HerramientasController::class, 'store'])->name('herramientas.store');
@@ -28,6 +30,11 @@ Route::prefix('herramientas')->group(function () {
     Route::post('/show', [App\Http\Controllers\HerramientasController::class, 'show'])->name('herramientas.show');
     Route::delete('/destroy/{id_herramienta}', [App\Http\Controllers\HerramientasController::class, 'destroy'])->name('herramientas.destroy');
     Route::get('/listado', [App\Http\Controllers\HerramientasController::class, 'listado'])->name('herramientas.listado');
+});
+
+Route::prefix('materiales')->group(function(){
+    Route::get('/', [MaterialesController::class, 'index'])->name('materiales.index');
+    Route:::get('');
 });
 
 // Google Auth

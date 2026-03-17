@@ -9,12 +9,11 @@
     @vite('resources/css/app.css', 'resources/js/app.js')
 </head>
 
-<body>
+<body class="flex flex-col min-h-screen">
 
     @php
         $currentRoute = request()->route()->getName();
-        $isLoginPage =
-            $currentRoute === 'login' || $currentRoute === 'registro' || $currentRoute === 'aviso.privacidad';
+        $isLoginPage = $currentRoute === 'login';
         $isRegistroPage = $currentRoute === 'registro';
         $isAvisoPage = $currentRoute === 'aviso.privacidad';
     @endphp
@@ -23,9 +22,9 @@
         <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-[#023047]">
             <div class="flex flex-wrap justify-between items-center">
 
-                {{-- Lado izquierdo: toggle sidebar + logo + buscador --}}
+                {{-- Lado izquierdo: toggle sidebar + logo + buscador este es la hamburguesita del carlitos junior --}}
                 <div class="flex justify-start items-center">
-                    <button id="toggleSidebar" aria-expanded="true" aria-controls="sidebar"
+                    {{-- <button id="toggleSidebar" aria-expanded="true" aria-controls="sidebar"
                         class="hidden p-2 mr-3 text-gray-600 rounded cursor-pointer lg:inline hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700">
                         <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 16 12">
@@ -33,7 +32,6 @@
                                 d="M1 1h14M1 6h14M1 11h7" />
                         </svg>
                     </button>
-
                     <button aria-expanded="true" aria-controls="sidebar"
                         class="p-2 mr-2 text-gray-600 rounded-lg cursor-pointer lg:hidden hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                         <svg class="w-[18px] h-[18px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -42,14 +40,27 @@
                                 d="M1 1h15M1 7h15M1 13h15" />
                         </svg>
                         <span class="sr-only">Toggle sidebar</span>
-                    </button>
+                    </button> --}}
 
                     <a href="{{ route('inicio') }}" class="flex mr-4">
-                        <span
-                            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Herramientas</span>
+                        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white md:hover:text-orange-500 duration-200">Electronic's
+                            component</span>
                     </a>
 
-                    @if (!$isLoginPage)
+                    @if (!$isLoginPage && auth()->guard('usuarios')->check())
+                        
+                        <button id="dropdownHerramientasButton" data-dropdown-toggle="dropdownHerramientas"
+                            data-dropdown-placement="bottom"
+                            class="flex items-center justify-between w-full py-2 px-3 rounded font-medium text-white ml-3 md:w-auto
+                            hover:bg-orange-500 md:hover:bg-transparent md:border-0 md:hover:text-orange-500 md:p-0 duration-200">
+                            <a href="/registro">Registrar usuario</a>
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m19 9-7 7-7-7" />
+                            </svg>
+                        </button>
+                    @endif
+
+                    {{-- @if (!$isLoginPage && auth()->guard('usuarios')->check())
                         <form action="#" method="GET" class="hidden lg:block lg:pl-2">
                             <label for="topbar-search" class="sr-only">Buscar herramientas</label>
                             <div class="relative mt-1 lg:w-96">
@@ -65,13 +76,54 @@
                                     placeholder="Buscar herramientas">
                             </div>
                         </form>
-                    @endif
+                    @endif --}}
                 </div>
 
                 {{-- Lado derecho: acciones de usuario --}}
-                @if (!$isLoginPage)
+                @if (!$isLoginPage && auth()->guard('usuarios')->check())
                     <div class="flex items-center gap-2 lg:order-2">
 
+                        <button type="button"
+                            class="hidden sm:inline-flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 md:hover:text-orange-500 focus:ring-primary-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none focus:ring-orange-500">
+                            <svg aria-hidden="true" class="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg><a href="/materiales">Solicitar material</a>
+
+                        </button>
+                        <ul>
+                            <li class="relative">
+                                <button id="dropdownMaterialesButton" data-dropdown-toggle="dropdownMateriales"
+                                    data-dropdown-placement="bottom"
+                                    class="flex items-center justify-between w-full py-2 px-3 rounded font-medium text-white md:w-auto
+                            hover:bg-orange-500 md:hover:bg-transparent md:border-0 md:hover:text-orange-500 md:p-0 duration-200">
+                                    Materiales
+                                    <svg class="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                        width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2" d="m19 9-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <!-- Dropdown menu -->
+                                <div id="dropdownMateriales"
+                                    class="z-10 absolute hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
+                                    <ul class="p-2 text-sm text-body font-medium"
+                                        aria-labelledby="dropdownMaterialesButton">
+
+                                        <li>
+                                            <a href="/materiales/registro"
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Registro</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="/materiales/listado"
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Listado</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
                         <ul>
                             <li class="relative">
                                 <button id="dropdownHerramientasButton" data-dropdown-toggle="dropdownHerramientas"
@@ -107,14 +159,15 @@
 
                         {{-- Botón solicitar herramienta --}}
                         <button type="button"
-                            class="hidden sm:inline-flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                            class="hidden sm:inline-flex items-center justify-center text-white bg-primary-700 md:hover:text-orange-500 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                             <svg aria-hidden="true" class="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                                     clip-rule="evenodd"></path>
-                            </svg>
-                            Solicitar Herramienta
+                            </svg><a href="/herramientas">Solicitar Herramienta</a>
+
                         </button>
+                        
 
 
                         {{-- Avatar del usuario con dropdown --}}
@@ -168,19 +221,21 @@
                 @endif
 
                 @if ($isRegistroPage || $isAvisoPage)
-                    <a href="{{ route('login') }}"
-                        class="ml-2 text-gray-500 hover:text-[#fb5607] dark:text-gray-400 dark:hover:text-[#fb5607]">
-                        Iniciar sesión
-                    </a>
+                    @guest('usuarios')
+                        <a href="{{ route('login') }}"
+                            class="ml-2 text-gray-500 hover:text-[#fb5607] dark:text-gray-400 dark:hover:text-[#fb5607]">
+                            Iniciar sesión
+                        </a>
+                    @endguest
                 @endif
 
             </div>
         </nav>
     </header>
 
-    <div>
+    <main class="flex-1">
         @yield('contenido')
-    </div>
+    </main>
 
     <footer class="p-4 bg-white md:p-8 lg:p-10 dark:bg-[#023047]">
         <div class="mx-auto max-w-screen-xl text-center">
@@ -222,6 +277,40 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
 
+    <script>
+        const searchInput = document.getElementById('topbar-search');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const q = this.value;
+
+                fetch(`/herramientas/buscar?q=${encodeURIComponent(q)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        // Busca el contenedor donde están las herramientas en tu vista
+                        const contenedor = document.getElementById('lista-herramientas');
+                        if (!contenedor) return;
+
+                        contenedor.innerHTML = '';
+
+                        if (data.length === 0) {
+                            contenedor.innerHTML =
+                                '<p class="text-gray-500">No se encontraron herramientas.</p>';
+                            return;
+                        }
+
+                        data.forEach(h => {
+                            contenedor.innerHTML += `
+                            <div class="border rounded p-4">
+                                <p class="font-semibold">${h.nombre_herramienta}</p>
+                                <!-- agrega más campos según tu modelo -->
+                            </div>
+                        `;
+                        });
+                    });
+            });
+        }
+    </script>
 </body>
 
 </html>

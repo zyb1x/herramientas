@@ -1,6 +1,6 @@
 @extends('plantilla.app')
 
-@section('titulo', 'herramientas')
+@section('titulo', 'materiales')
 
 
 @section('contenido')
@@ -9,7 +9,7 @@
 
         <div class="bg-[#023047] rounded-2xl p-5 border border-gray-700 shadow-lg">
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold text-white">Herramientas</h1>
+                <h1 class="text-2xl font-bold text-white">Materiales</h1>
                 {{-- <div class="flex items-center gap-3">
                     <button onclick="openDrawer()"
                         class="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
@@ -35,7 +35,7 @@
                     </button>
                 </div> --}}
                 <form action="{{ route('herramientas.index') }}" method="GET" class="hidden lg:block lg:pl-2">
-                    <label for="topbar-search" class="sr-only">Buscar herramientas</label>
+                    <label for="topbar-search" class="sr-only">Buscar material</label>
                     <div class="relative mt-1 lg:w-96">
                         <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                             <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
@@ -52,30 +52,30 @@
             </div>
             <div id="lista-herramientas" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-                @foreach ($herramientas as $herramienta)
+                @foreach ($materiales as $material)
                     <div
                         class="bg-[#023047] rounded-xl border border-gray-500 overflow-hidden hover:border-orange-600 transition-colors flex flex-col sjadow-lg duration-400">
 
                         <!-- Imagen -->
-                        <div class="bg-white flex items-center justify-center h-56 p-4">
+                        {{-- <div class="bg-white flex items-center justify-center h-56 p-4">
                             <img class="h-44 object-contain" src="{{ $herramienta->imagen }}"
                                 alt="{{ $herramienta->nombre_herramienta }}">
-                        </div>
+                        </div> --}}
 
                         <!-- Contenido -->
                         <div class="p-4 flex flex-col flex-1">
 
                             <p class="text-orange-400 text-xs font-bold tracking-widest mb-1">
-                                {{ $herramienta->categoria->nombre_categoria }}
+                                {{ $material->estatus }}
                             </p>
 
                             <h3 class="text-white text-sm font-semibold leading-snug mb-2">
-                                {{ $herramienta->nombre_herramienta }}
+                                {{ $material->nombre_material }}
                             </h3>
 
                             <div class="flex items-center gap-1 mb-3">
                                 <span class="text-gray-400 text-xs">Existencia:</span>
-                                <span class="text-white text-xs font-semibold">{{ $herramienta->existencia }}</span>
+                                <span class="text-white text-xs font-semibold">{{ $material->existencia }}</span>
                             </div>
 
                             {{-- <div class="flex gap-2 mb-2 mt-auto">
