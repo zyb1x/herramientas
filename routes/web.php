@@ -10,6 +10,8 @@ use App\Models\Usuarios;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\CarritoController;
+
 
 
 // Rutas publicas
@@ -33,7 +35,7 @@ Route::prefix('herramientas')->group(function () {
 });
 
 //Rutas de materiales
-Route::prefix('materiales')->group(function(){
+Route::prefix('materiales')->group(function () {
     Route::get('/', [MaterialesController::class, 'index'])->name('materiales.index');
     Route::get('/registro', [MaterialesController::class, 'create'])->name('materiales.create');
     Route::post('/store', [MaterialesController::class, 'store'])->name('materiales.store');
@@ -43,6 +45,7 @@ Route::prefix('materiales')->group(function(){
     Route::delete('/destroy/{id_material}', [MaterialesController::class, 'destroy'])->name('materiales.destroy');
     Route::get('/listado', [MaterialesController::class, 'listado'])->name('materiales.listado');
 });
+
 
 // Google Auth
 Route::get('auth/google', function () {
@@ -80,6 +83,16 @@ Route::get('/auth/google/callback', function () {
 //rutas protegidas
 Route::middleware('auth:usuarios')->group(function () {
 
+    Route::prefix('carrito')->name('carrito.')->group(function () {
+        Route::get('/',                         [CarritoController::class, 'index'])->name('index');
+        Route::post('/agregar/herramienta',     [CarritoController::class, 'agregarHerramienta'])->name('agregar.herramienta');
+        Route::post('/agregar/material',        [CarritoController::class, 'agregarMaterial'])->name('agregar.material');
+        Route::delete('/eliminar/{rowId}',      [CarritoController::class, 'eliminar'])->name('eliminar');
+        Route::delete('/vaciar',                [CarritoController::class, 'vaciar'])->name('vaciar');
+        Route::post('/confirmar',               [CarritoController::class, 'confirmar'])->name('confirmar');
+    });
+
+
 
     Route::get('/inicio', function () {
         return view('inicio.inicio');
@@ -98,3 +111,7 @@ Route::get('/aviso-de-privacidad/pdf', function () {
     $pdf = Pdf::loadView('aviso_de_privacidad.pdf'); // <- busca aviso_de_privacidad/pdf.blade.php
     return $pdf->download('aviso_de_privacidad.pdf');
 })->name('aviso.privacidad.pdf');
+
+// Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

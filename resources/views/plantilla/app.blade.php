@@ -43,12 +43,13 @@
                     </button> --}}
 
                     <a href="{{ route('inicio') }}" class="flex mr-4">
-                        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white md:hover:text-orange-500 duration-200">Electronic's
+                        <span
+                            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white md:hover:text-orange-500 duration-200">Electronic's
                             component</span>
                     </a>
 
                     @if (!$isLoginPage && auth()->guard('usuarios')->check())
-                        
+
                         <button id="dropdownHerramientasButton" data-dropdown-toggle="dropdownHerramientas"
                             data-dropdown-placement="bottom"
                             class="flex items-center justify-between w-full py-2 px-3 rounded font-medium text-white ml-3 md:w-auto
@@ -58,6 +59,22 @@
                                 d="m19 9-7 7-7-7" />
                             </svg>
                         </button>
+                        <a href="{{ route('carrito.index') }}"
+                            class="relative inline-flex items-center text-gray-300 hover:text-orange-400 transition-colors ml-5">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+
+                            @php $totalCarrito = \Gloudemans\Shoppingcart\Facades\Cart::count(); @endphp
+                            @if ($totalCarrito > 0)
+                                <span
+                                    class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                    {{ $totalCarrito }}
+                                </span>
+                            @endif
+                        </a>
                     @endif
 
                     {{-- @if (!$isLoginPage && auth()->guard('usuarios')->check())
@@ -167,7 +184,7 @@
                             </svg><a href="/herramientas">Solicitar Herramienta</a>
 
                         </button>
-                        
+
 
 
                         {{-- Avatar del usuario con dropdown --}}
