@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\ControlMaterialesController;
 
 
 
@@ -44,6 +45,9 @@ Route::prefix('materiales')->group(function () {
     Route::post('/show', [MaterialesController::class, 'show'])->name('materiales.show');
     Route::delete('/destroy/{id_material}', [MaterialesController::class, 'destroy'])->name('materiales.destroy');
     Route::get('/listado', [MaterialesController::class, 'listado'])->name('materiales.listado');
+
+    Route::get('/control',  [ControlMaterialesController::class, 'create'])->name('materiales.control');
+    Route::post('/control', [ControlMaterialesController::class, 'store'])->name('prestamos.salida.store');
 });
 
 
