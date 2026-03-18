@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\DevolucionController;
+use App\Http\Controllers\EnsambladoController;
 
 
 
@@ -90,6 +92,19 @@ Route::middleware('auth:usuarios')->group(function () {
         Route::delete('/eliminar/{rowId}',      [CarritoController::class, 'eliminar'])->name('eliminar');
         Route::delete('/vaciar',                [CarritoController::class, 'vaciar'])->name('vaciar');
         Route::post('/confirmar',               [CarritoController::class, 'confirmar'])->name('confirmar');
+    });
+
+    // ─── Devoluciones ─────────────────────────────────────────────────────────────
+    Route::prefix('devoluciones')->name('devoluciones.')->group(function () {
+        Route::get('/',         [DevolucionController::class, 'index'])->name('index');
+        Route::post('/buscar',  [DevolucionController::class, 'buscarPrestamo'])->name('buscar');
+        Route::post('/store',   [DevolucionController::class, 'store'])->name('store');
+    });
+
+    // ─── Ensamblados ──────────────────────────────────────────────────────────────
+    Route::prefix('ensamblados')->name('ensamblados.')->group(function () {
+        Route::get('/',       [EnsambladoController::class, 'index'])->name('index');
+        Route::post('/store', [EnsambladoController::class, 'store'])->name('store');
     });
 
 
