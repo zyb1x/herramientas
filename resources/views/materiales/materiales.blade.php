@@ -65,9 +65,15 @@
                         <!-- Contenido -->
                         <div class="p-4 flex flex-col flex-1">
 
-                            <p class="text-orange-400 text-xs font-bold tracking-widest mb-1">
-                                {{ $material->estatus }}
-                            </p>
+                            @if ($material->estatus === 'Disponible')
+                                <p class="text-green-500 text-xs font-bold tracking-widest mb-1">
+                                    {{ $material->estatus }}
+                                </p>
+                            @else
+                                <p class="text-red-500 text-xs font-bold tracking-widest mb-1">
+                                    {{ $material->estatus }}
+                                </p>
+                            @endif
 
                             <h3 class="text-white text-sm font-semibold leading-snug mb-2">
                                 {{ $material->nombre_material }}

@@ -13,6 +13,21 @@ class MaterialesController extends Controller
         return view('materiales.materiales', compact('materiales'));
     }
 
+    public function listado(Request $request)
+    {
+        $query = Materiales::query();
+
+        if ($request->filled('q')) {
+            $query->where('nombre_material', 'like', '%' . $request->q . '%');
+            // Agrega más columnas si quieres buscar en más campos:
+            // ->orWhere('descripcion', 'like', '%' . $request->q . '%')
+        }
+
+        $materiales = $query->get();
+
+        return view('materiales.listado', compact('materiales'));
+    }
+
     public function create()
     {
         return view('materiales.formulario-crear');
@@ -41,7 +56,7 @@ class MaterialesController extends Controller
 
         $materiales->save();
 
-        return view('/materiales/listado');
+        return redirect()->route('materiales.listado')->with('hecho', 'Material añadida exitosamente.');
     }
 
     public function edit($id)
@@ -50,24 +65,29 @@ class MaterialesController extends Controller
         return view('materiales.formulario-editar')->with('materiales', $materiales);
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $materiales = Materiales::find($id);
 
         $materiales->nombre_material = $request->nombre_material;
         $materiales->existencia = $request->existencia;
         $materiales->estatus = $request->estatus;
 
-        $materiales-> save();
+        $materiales->save();
 
-
-        return redirect('/materiales/listado')->with('hecho', 'Material actualizado');
+        return redirect()->route('materiales.listado')->with('hecho', 'Material actualizado exitosamente.');
     }
 
-    public function destroy($id){
-        $materiales = Materiales::find($id);
+    public function destroy($id)
+    {
+        $material = Materiales::find($id);
 
-        $materiales->delete();
+        if ($material) {
+            $material->update(['estatus' => 'Agotado']);
 
-        return redirect('/materiales/listado')->with('hecho', 'Material eliminado');
+            return redirect()->route('materiales.listado')->with('success', 'Estatus cambiado a no disponible exitosamente.');
+        }
+
+        return redirect()->route('materiales.listado')->with('error', 'Material no encontrada.');
     }
 }

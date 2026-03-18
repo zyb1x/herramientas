@@ -32,9 +32,16 @@ Route::prefix('herramientas')->group(function () {
     Route::get('/listado', [App\Http\Controllers\HerramientasController::class, 'listado'])->name('herramientas.listado');
 });
 
+//Rutas de materiales
 Route::prefix('materiales')->group(function(){
     Route::get('/', [MaterialesController::class, 'index'])->name('materiales.index');
-    Route:::get('');
+    Route::get('/registro', [MaterialesController::class, 'create'])->name('materiales.create');
+    Route::post('/store', [MaterialesController::class, 'store'])->name('materiales.store');
+    Route::get('/{id_material}/edit', [MaterialesController::class, 'edit'])->name('materiales.edit');
+    Route::post('/{id_material}/actualizar', [MaterialesController::class, 'update'])->name('materiales.update');
+    Route::post('/show', [MaterialesController::class, 'show'])->name('materiales.show');
+    Route::delete('/destroy/{id_material}', [MaterialesController::class, 'destroy'])->name('materiales.destroy');
+    Route::get('/listado', [MaterialesController::class, 'listado'])->name('materiales.listado');
 });
 
 // Google Auth
