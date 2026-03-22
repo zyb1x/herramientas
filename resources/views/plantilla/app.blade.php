@@ -80,12 +80,14 @@
 
                                         <li>
                                             <a href="/materiales/registro"
-                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Devolver material</a>
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Devolver
+                                                material</a>
                                         </li>
 
                                         <li>
                                             <a href="/devoluciones"
-                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Devolver herramientas</a>
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Devolver
+                                                herramientas</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -242,10 +244,18 @@
                                     <span class="block text-gray-500 dark:text-gray-400 truncate text-xs mt-1">
                                         {{ Auth::guard('usuarios')->user()->correo }}
                                     </span>
+                                    <span class="block text-orange-500 truncate text-xs mt-1">ID:
+                                        {{ Auth::guard('usuarios')->user()->id }}
+                                    </span>
                                     <span
                                         class="inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full
                                         {{ Auth::guard('usuarios')->user()->rol === 'Administrador' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
                                         {{ Auth::guard('usuarios')->user()->rol }}
+                                    </span>
+                                    <span class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-orange-500 text-white hover:bg-white hover:text-orange-500 duration-150">
+                                        <a href="">
+                                            Mis pedidos
+                                        </a>
                                     </span>
                                 </div>
                             </div>
