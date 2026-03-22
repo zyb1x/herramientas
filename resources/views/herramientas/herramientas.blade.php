@@ -5,7 +5,7 @@
 
 @section('contenido')
     <!-- GRID PRODUCTOS -->
-    <div class="max-w-6xl mx-auto px-6 mt-10">
+    <div class="max-w-6xl mx-auto px-6 mt-10 mb-10">
 
         <div class="bg-[#023047] rounded-2xl p-5 border border-gray-700 shadow-lg">
             <div class="flex items-center justify-between mb-6">
@@ -81,7 +81,7 @@
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
         <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
             <!-- Modal content -->
-            <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+            <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5 shadow-orange-500">
                 <!-- Modal header -->
                 <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -111,22 +111,22 @@
                         </div>
                         <div>
                             <label for="modal-nombre"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre</label>
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre:</label>
                             <input type="text" id="modal-nombre" readonly
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white cursor-not-allowed">
+                                class="bg-transparent border-transparent focus:ring-transparent text-lg font-bold text-gray-900 rounded-lg block w-full p-2.5 dark:text-orange-500 cursor-not-allowed">
                         </div>
                         <div>
                             <label for="modal-categoria"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Categoría</label>
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Categoría:</label>
                             <input type="text" id="modal-categoria" readonly
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white cursor-not-allowed">
+                                class="bg-transparent border-transparent focus:ring-transparent text-lg font-bold text-gray-900 rounded-lg block w-full p-2.5 dark:text-orange-500 cursor-not-allowed">
                         </div>
                         <div>
                             <label for="modal-existencia"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Existencia
-                                disponible</label>
+                                disponible:</label>
                             <input type="number" id="modal-existencia" readonly
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white cursor-not-allowed">
+                                class="bg-transparent border-transparent focus:ring-transparent text-lg font-bold text-gray-900 rounded-lg block w-full p-2.5 dark:text-orange-500 cursor-not-allowed">
                         </div>
                         <div>
                             <label for="modal-cantidad"

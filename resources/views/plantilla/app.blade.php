@@ -84,7 +84,7 @@
                                         </li>
 
                                         <li>
-                                            <a href="/materiales/listado"
+                                            <a href="/devoluciones"
                                                 class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Devolver herramientas</a>
                                         </li>
                                     </ul>

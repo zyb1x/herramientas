@@ -8,7 +8,6 @@
 
         <h1 class="text-2xl font-bold text-white mb-6">Carrito de solicitud</h1>
 
-        {{-- Alertas --}}
         @if (session('success'))
             <div class="mb-4 p-3 bg-green-600 text-white text-sm rounded-lg">{{ session('success') }}</div>
         @endif
@@ -38,7 +37,6 @@
         @else
             <div class="bg-[#023047] rounded-2xl border border-gray-700 shadow-lg overflow-hidden">
 
-                {{-- Encabezado de tabla --}}
                 <div
                     class="grid grid-cols-12 gap-2 px-5 py-3 bg-[#01263a] text-gray-400 text-xs font-semibold uppercase tracking-wider">
                     <div class="col-span-1">Tipo</div>
@@ -50,12 +48,10 @@
                     <div class="col-span-1 text-center">Quitar</div>
                 </div>
 
-                {{-- Filas --}}
                 <div class="divide-y divide-gray-700">
                     @foreach ($items as $item)
-                        <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center">
+                        <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center" data-row-id="{{ $item->rowId }}">
 
-                            {{-- Tipo badge --}}
                             <div class="col-span-1">
                                 @if ($item->options->tipo === 'herramienta')
                                     <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-900 text-blue-300">
@@ -69,12 +65,10 @@
                                 @endif
                             </div>
 
-                            {{-- Código --}}
                             <div class="col-span-1 text-gray-300 text-xs font-mono">
                                 #{{ $item->id }}
                             </div>
 
-                            {{-- Nombre + estado/estatus --}}
                             <div class="col-span-3">
                                 <p class="text-white text-sm font-medium leading-snug">{{ $item->name }}</p>
                                 @if ($item->options->tipo === 'herramienta')
@@ -96,18 +90,18 @@
                                 @endif
                             </div>
 
-                            {{-- Cantidad de salida --}}
-                            <div class="col-span-2 text-center text-white font-semibold text-sm">
-                                {{ $item->qty }}
+                            <div class="col-span-2 flex justify-center">
+                                <input type="number" value="{{ $item->qty }}" min="1"
+                                    max="{{ $item->options->existencia }}" data-row-id="{{ $item->rowId }}"
+                                    data-existencia="{{ $item->options->existencia }}"
+                                    class="qty-input w-20 text-center bg-gray-700 border border-gray-600 text-white text-sm font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors p-1.5">
                             </div>
 
-                            {{-- Existencia antes --}}
                             <div class="col-span-2 text-center text-gray-300 text-sm">
                                 {{ $item->options->existencia }}
                             </div>
 
-                            {{-- Existencia después --}}
-                            <div
+                            <div id="despues-{{ $item->rowId }}"
                                 class="col-span-2 text-center text-sm font-semibold
                                 @if ($item->options->existencia - $item->qty <= 0) text-red-400
                                 @elseif($item->options->existencia - $item->qty <= 3) text-yellow-400
@@ -115,7 +109,6 @@
                                 {{ $item->options->existencia - $item->qty }}
                             </div>
 
-                            {{-- Eliminar --}}
                             <div class="col-span-1 flex justify-center">
                                 <form action="{{ route('carrito.eliminar', $item->rowId) }}" method="POST">
                                     @csrf
@@ -133,7 +126,6 @@
                     @endforeach
                 </div>
 
-                {{-- Resumen conteo --}}
                 <div class="px-5 py-3 bg-[#01263a] border-t border-gray-700 flex justify-between text-sm text-gray-400">
                     <span>Total de artículos: <span class="text-white font-semibold">{{ $items->count() }}</span></span>
                     <form action="{{ route('carrito.vaciar') }}" method="POST">
@@ -146,7 +138,6 @@
                 </div>
             </div>
 
-            {{-- Formulario de confirmación --}}
             <div class="mt-6 bg-[#023047] rounded-2xl border border-gray-700 shadow-lg p-5">
 
                 <h2 class="text-lg font-bold text-white mb-4">Datos del préstamo</h2>
@@ -154,9 +145,13 @@
                 <form action="{{ route('carrito.confirmar') }}" method="POST">
                     @csrf
 
+                    @foreach ($items as $item)
+                        <input type="hidden" id="hidden-qty-{{ $item->rowId }}" name="cantidades[{{ $item->rowId }}]"
+                            value="{{ $item->qty }}">
+                    @endforeach
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
 
-                        {{-- ID Empleado --}}
                         <div>
                             <label for="id_empleado" class="block mb-2 text-sm font-medium text-gray-300">
                                 ID del Empleado
@@ -170,7 +165,6 @@
                             @enderror
                         </div>
 
-                        {{-- Usuario registrante (solo lectura) --}}
                         <div>
                             <label class="block mb-2 text-sm font-medium text-gray-300">
                                 Registrado por
@@ -198,5 +192,40 @@
         @endif
 
     </div>
+
+    @if (!$items->isEmpty())
+        <script>
+            function colorExistDespues(el, valor) {
+                el.classList.remove('text-red-400', 'text-yellow-400', 'text-green-400');
+                if (valor <= 0) el.classList.add('text-red-400');
+                else if (valor <= 3) el.classList.add('text-yellow-400');
+                else el.classList.add('text-green-400');
+            }
+
+            document.querySelectorAll('.qty-input').forEach(input => {
+                input.addEventListener('input', () => {
+                    const existencia = parseInt(input.dataset.existencia);
+                    const cantidad = parseInt(input.value);
+                    const rowId = input.dataset.rowId;
+                    const despuesEl = document.getElementById(`despues-${rowId}`);
+                    const hiddenInput = document.getElementById(`hidden-qty-${rowId}`);
+
+                    if (isNaN(cantidad) || cantidad < 1 || cantidad > existencia) {
+                        input.classList.add('border-red-500');
+                        input.classList.remove('border-gray-600');
+                        return;
+                    }
+
+                    input.classList.remove('border-red-500');
+                    input.classList.add('border-gray-600');
+
+                    despuesEl.textContent = existencia - cantidad;
+                    colorExistDespues(despuesEl, existencia - cantidad);
+
+                    hiddenInput.value = cantidad;
+                });
+            });
+        </script>
+    @endif
 
 @endsection

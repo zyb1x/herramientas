@@ -12,14 +12,12 @@ use App\Models\DetallePrestamo;
 
 class CarritoController extends Controller
 {
-    // ─── Mostrar carrito ────────────────────────────────────────────────────────
     public function index()
     {
         $items = Cart::content();
         return view('carrito.carrito', compact('items'));
     }
 
-    // ─── Agregar herramienta ────────────────────────────────────────────────────
     public function agregarHerramienta(Request $request)
     {
         $request->validate([
@@ -29,7 +27,6 @@ class CarritoController extends Controller
 
         $herramienta = Herramientas::findOrFail($request->id);
 
-        // Verificar que no exceda existencia (sumando lo que ya hay en carrito)
         $enCarrito = 0;
         foreach (Cart::content() as $item) {
             if ($item->options->tipo === 'herramienta' && $item->id == $herramienta->id_herramienta) {
@@ -58,7 +55,6 @@ class CarritoController extends Controller
         return redirect()->route('carrito.index')->with('success', 'Herramienta agregada al carrito.');
     }
 
-    // ─── Agregar material ───────────────────────────────────────────────────────
     public function agregarMaterial(Request $request)
     {
         $request->validate([
@@ -95,25 +91,24 @@ class CarritoController extends Controller
         return redirect()->route('carrito.index')->with('success', 'Material agregado al carrito.');
     }
 
-    // ─── Eliminar item ──────────────────────────────────────────────────────────
     public function eliminar($rowId)
     {
         Cart::remove($rowId);
         return redirect()->route('carrito.index')->with('success', 'Artículo eliminado del carrito.');
     }
 
-    // ─── Vaciar carrito ─────────────────────────────────────────────────────────
     public function vaciar()
     {
         Cart::destroy();
         return redirect()->route('carrito.index')->with('success', 'Carrito vaciado.');
     }
 
-    // ─── Confirmar préstamo ─────────────────────────────────────────────────────
     public function confirmar(Request $request)
     {
         $request->validate([
-            'id_empleado' => 'required|integer|exists:empleados,id_empleado',
+            'id_empleado'  => 'required|integer|exists:empleados,id_empleado',
+            'cantidades'   => 'required|array',
+            'cantidades.*' => 'required|integer|min:1',
         ]);
 
         $items = Cart::content();
@@ -122,7 +117,15 @@ class CarritoController extends Controller
             return back()->with('error', 'El carrito está vacío.');
         }
 
-        // Validar existencias antes de proceder
+        foreach ($request->cantidades as $rowId => $cantidad) {
+            $item = Cart::get($rowId);
+            if ($item && $cantidad >= 1 && $cantidad <= $item->options->existencia) {
+                Cart::update($rowId, (int) $cantidad);
+            }
+        }
+
+        $items = Cart::content();
+
         foreach ($items as $item) {
             if ($item->options->tipo === 'herramienta') {
                 $herramienta = Herramientas::findOrFail($item->id);
@@ -137,42 +140,37 @@ class CarritoController extends Controller
             }
         }
 
-        // Crear el préstamo
         $prestamo = Prestamo::create([
             'id_empleado' => $request->id_empleado,
             'id_usuario'  => Auth::id(),
         ]);
 
-        // Crear detalles y descontar existencia
         foreach ($items as $item) {
             if ($item->options->tipo === 'herramienta') {
                 $herramienta = Herramientas::findOrFail($item->id);
 
                 DetallePrestamo::create([
-                    'id_prestamo'    => $prestamo->id_prestamo,
-                    'id_herramienta' => $herramienta->id_herramienta,
-                    'id_material'    => null,
-                    'cantidad'       => $item->qty,
+                    'id_prestamo'      => $prestamo->id_prestamo,
+                    'id_herramienta'   => $herramienta->id_herramienta,
+                    'id_material'      => null,
+                    'cantidad'         => $item->qty,
                     'estatus_articulo' => 'Prestado',
                 ]);
 
-                // Descontar existencia
                 $herramienta->decrement('existencia', $item->qty);
             } else {
                 $material = Materiales::findOrFail($item->id);
 
                 DetallePrestamo::create([
-                    'id_prestamo'    => $prestamo->id_prestamo,
-                    'id_herramienta' => null,
-                    'id_material'    => $material->id_material,
-                    'cantidad'       => $item->qty,
+                    'id_prestamo'      => $prestamo->id_prestamo,
+                    'id_herramienta'   => null,
+                    'id_material'      => $material->id_material,
+                    'cantidad'         => $item->qty,
                     'estatus_articulo' => 'Prestado',
                 ]);
 
-                // Descontar existencia
                 $material->decrement('existencia', $item->qty);
 
-                // Si quedó en 0, marcar como Agotado
                 if ($material->fresh()->existencia <= 0) {
                     $material->update(['estatus' => 'Agotado']);
                 }
