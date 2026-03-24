@@ -8,7 +8,7 @@
             <!-- Start coding here -->
             <div class=" bg-[#023047] relative shadow-md sm:rounded-lg overflow-hidden">
                 <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-                    <div class="w-full md:w-1/2">
+                    {{-- <div class="w-full md:w-1/2">
                         <form class="flex items-center">
                             <label for="simple-search" class="sr-only">Buscar material</label>
                             <div class="relative w-full">
@@ -25,7 +25,7 @@
                                     placeholder="Search" required="">
                             </div>
                         </form>
-                    </div>
+                    </div> --}}
                     <div
                         class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
 
@@ -120,7 +120,7 @@
                                                             Editar
                                                         </a>
                                                     </li>
-                                                    <li>
+                                                    {{-- <li>
                                                         <a href="{{ route('materiales.show', $material->id_material) }}"
                                                             class="flex w-full items-center py-2 px-4 hover:bg-orange-300 text-gray-700 duration-300">
                                                             <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" s
@@ -131,7 +131,7 @@
                                                             </svg>
                                                             Ver
                                                         </a>
-                                                    </li>
+                                                    </li> --}}
                                                     <li>
 
                                                         <form

@@ -106,6 +106,19 @@ class DevolucionController extends Controller
             $registradas++;
         }
 
+        $pendientes = DetallePrestamo::where('id_prestamo', $request->id_prestamo)
+            ->whereNotNull('id_herramienta')
+            ->where('estatus_articulo', 'Prestado')
+            ->count();
+
+        if ($pendientes === 0) {
+            Prestamo::where('id_prestamo', $request->id_prestamo)
+                ->update(['estatus_general' => 'Cerrado']);
+        } else {
+            Prestamo::where('id_prestamo', $request->id_prestamo)
+                ->update(['estatus_general' => 'Devuelto Parcial']);
+        }
+
         if ($registradas === 0) {
             return redirect()->route('devoluciones.index')
                 ->with('error', 'No se registró ninguna devolución.');

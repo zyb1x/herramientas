@@ -78,11 +78,11 @@
                                     <ul class="p-2 text-sm text-body font-medium"
                                         aria-labelledby="dropdownDevolverButton">
 
-                                        <li>
+                                        {{-- <li>
                                             <a href="/materiales/registro"
                                                 class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Devolver
                                                 material</a>
-                                        </li>
+                                        </li> --}}
 
                                         <li>
                                             <a href="/devoluciones"
@@ -141,6 +141,15 @@
                                     d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                                     clip-rule="evenodd"></path>
                             </svg><a href="/materiales">Solicitar material</a>
+
+                        </button>
+                        <button type="button"
+                            class="hidden sm:inline-flex items-center justify-center text-white bg-primary-700 md:hover:text-orange-500 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                            <svg aria-hidden="true" class="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg><a href="/herramientas">Solicitar Herramienta</a>
 
                         </button>
                         <ul>
@@ -209,16 +218,7 @@
                         </ul>
 
                         {{-- Botón solicitar herramienta --}}
-                        <button type="button"
-                            class="hidden sm:inline-flex items-center justify-center text-white bg-primary-700 md:hover:text-orange-500 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-                            <svg aria-hidden="true" class="mr-1 -ml-1 w-5 h-5" fill="currentColor"
-                                viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                    clip-rule="evenodd"></path>
-                            </svg><a href="/herramientas">Solicitar Herramienta</a>
 
-                        </button>
 
 
 
@@ -252,8 +252,9 @@
                                         {{ Auth::guard('usuarios')->user()->rol === 'Administrador' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
                                         {{ Auth::guard('usuarios')->user()->rol }}
                                     </span>
-                                    <span class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-orange-500 text-white hover:bg-white hover:text-orange-500 duration-150">
-                                        <a href="">
+                                    <span
+                                        class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-orange-500 text-white hover:bg-white hover:text-orange-500 duration-150">
+                                        <a href="/prestamos">
                                             Mis pedidos
                                         </a>
                                     </span>

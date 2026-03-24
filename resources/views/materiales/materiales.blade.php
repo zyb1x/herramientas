@@ -8,7 +8,7 @@
     <div class="max-w-6xl mx-auto px-6 mt-10 mb-10">
 
         <div class="bg-[#023047] rounded-2xl p-5 border border-gray-700 shadow-lg">
-            <div class="flex items-center justify-between mb-6">
+            {{-- <div class="flex items-center justify-between mb-6">
                 <h1 class="text-2xl font-bold text-white">Materiales</h1>
 
                 <form action="{{ route('materiales.index') }}" method="GET" class="hidden lg:block lg:pl-2">
@@ -26,7 +26,7 @@
                             placeholder="Buscar materiales" autocomplete="off">
                     </div>
                 </form>
-            </div>
+            </div> --}}
             <div id="lista-materiales" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
                 @foreach ($materiales as $material)

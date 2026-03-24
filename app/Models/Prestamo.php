@@ -32,6 +32,6 @@ class Prestamo extends Model
 
     public function usuario()
     {
-        return $this->belongsTo(\App\Models\User::class, 'id_usuario', 'id');
+        return $this->belongsTo(\App\Models\Usuarios::class, 'id_usuario', 'id');
     }
 }

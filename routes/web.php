@@ -13,8 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\DevolucionController;
 use App\Http\Controllers\EnsambladoController;
-
-
+use App\Http\Controllers\PrestamoController;
 
 // Rutas publicas
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -84,6 +83,9 @@ Route::get('/auth/google/callback', function () {
 
 //rutas protegidas
 Route::middleware('auth:usuarios')->group(function () {
+
+    Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.index');
+    Route::get('/prestamos/{id}', [PrestamoController::class, 'show'])->name('prestamos.show');
 
     Route::prefix('carrito')->name('carrito.')->group(function () {
         Route::get('/',                         [CarritoController::class, 'index'])->name('index');
