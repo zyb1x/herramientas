@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PrestamoController extends Controller
 {
-    
+
     public function index()
     {
         $prestamos = Prestamo::with(['empleado', 'usuario'])
@@ -21,11 +21,16 @@ class PrestamoController extends Controller
 
     public function show(int $id)
     {
-        $prestamo = Prestamo::with(['empleado', 'usuario', 'detalles'])
+        $prestamo = Prestamo::with([
+            'empleado',
+            'usuario',
+            'detalles.herramienta',
+            'detalles.material',
+        ])
             ->where('id_prestamo', $id)
             ->where('id_usuario', Auth::id())
             ->firstOrFail();
 
-        return view('prestamos_detalle', compact('prestamo'));
+        return view('pedidos.detalle_prestamo', compact('prestamo'));
     }
 }

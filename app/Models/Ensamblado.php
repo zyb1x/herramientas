@@ -11,7 +11,7 @@ class Ensamblado extends Model
     public    $timestamps = false;
 
     protected $fillable = [
-        'id_herramienta',
+        'id_material',
         'id_empleado',
         'cantidad_sobrante',
         'existencia_antes',
@@ -19,8 +19,8 @@ class Ensamblado extends Model
         'fecha_registro',
     ];
 
-    public function herramienta()
+    public function material()
     {
-        return $this->belongsTo(Herramientas::class, 'id_herramienta', 'id_herramienta');
+        return $this->belongsTo(Materiales::class, 'id_material', 'id_material');
     }
 }

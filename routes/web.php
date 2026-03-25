@@ -87,6 +87,12 @@ Route::middleware('auth:usuarios')->group(function () {
     Route::get('/prestamos', [PrestamoController::class, 'index'])->name('prestamos.index');
     Route::get('/prestamos/{id}', [PrestamoController::class, 'show'])->name('prestamos.show');
 
+    Route::get('/ensamblados',              [EnsambladoController::class, 'index'])->name('ensamblados.index');
+    Route::get('/ensamblados/crear',        [EnsambladoController::class, 'create'])->name('ensamblados.create');
+    Route::post('/ensamblados/store',       [EnsambladoController::class, 'store'])->name('ensamblados.store');
+    Route::get('/ensamblados/{id}/json',    [EnsambladoController::class, 'show'])->name('ensamblados.show');
+    Route::get('/ensamblados/listado',      [EnsambladoController::class, 'listado'])->name('ensamblados.listado');
+
     Route::prefix('carrito')->name('carrito.')->group(function () {
         Route::get('/',                         [CarritoController::class, 'index'])->name('index');
         Route::post('/agregar/herramienta',     [CarritoController::class, 'agregarHerramienta'])->name('agregar.herramienta');

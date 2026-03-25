@@ -93,6 +93,39 @@
                                 </div>
                             </li>
                         </ul>
+                        <ul>
+                            <li class="relative">
+                                <button id="dropdownEnsambleButton" data-dropdown-toggle="dropdownEnsamble"
+                                    data-dropdown-placement="bottom"
+                                    class="flex items-center justify-between w-full py-2 px-3 rounded font-medium text-white md:w-auto
+                            hover:bg-orange-500 md:hover:bg-transparent md:border-0 md:hover:text-orange-500 md:p-0 duration-200 ml-3">
+                                    Ensambles
+                                    <svg class="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                        width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2" d="m19 9-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <!-- Dropdown menu -->
+                                <div id="dropdownEnsamble"
+                                    class="z-10 absolute hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
+                                    <ul class="p-2 text-sm text-body font-medium"
+                                        aria-labelledby="dropdownEnsambleButton">
+
+                                        {{-- <li>
+                                            <a href="/materiales/registro"
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Devolver
+                                                material</a>
+                                        </li> --}}
+
+                                        <li>
+                                            <a href="/ensamblados"
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Registrar ensamble</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
                         <a href="{{ route('carrito.index') }}"
                             class="relative inline-flex items-center text-gray-300 hover:text-orange-400 transition-colors ml-5">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -145,7 +178,8 @@
                         </button>
                         <button type="button"
                             class="hidden sm:inline-flex items-center justify-center text-white bg-primary-700 md:hover:text-orange-500 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-                            <svg aria-hidden="true" class="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <svg aria-hidden="true" class="mr-1 -ml-1 w-5 h-5" fill="currentColor"
+                                viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                                     clip-rule="evenodd"></path>
