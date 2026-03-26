@@ -120,7 +120,7 @@
 
                                         <li>
                                             <a href="/ensamblados"
-                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Registrar ensamble</a>
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Historial de Ensambles</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -185,6 +185,13 @@
                                     clip-rule="evenodd"></path>
                             </svg><a href="/herramientas">Solicitar Herramienta</a>
 
+                        </button>
+                        <button type="button"
+                            class="hidden sm:inline-flex items-center justify-center text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:focus:ring-orange-800 ml-2">
+                            <svg class="mr-1 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                            <a href="/prestamos" class="text-white hover:text-white">Mis Pedidos</a>
                         </button>
                         <ul>
                             <li class="relative">
@@ -280,17 +287,6 @@
                                     </span>
                                     <span class="block text-orange-500 truncate text-xs mt-1">ID:
                                         {{ Auth::guard('usuarios')->user()->id }}
-                                    </span>
-                                    <span
-                                        class="inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full
-                                        {{ Auth::guard('usuarios')->user()->rol === 'Administrador' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
-                                        {{ Auth::guard('usuarios')->user()->rol }}
-                                    </span>
-                                    <span
-                                        class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-orange-500 text-white hover:bg-white hover:text-orange-500 duration-150">
-                                        <a href="/prestamos">
-                                            Mis pedidos
-                                        </a>
                                     </span>
                                 </div>
                             </div>

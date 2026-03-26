@@ -98,7 +98,7 @@
                         @enderror
                     </div> --}}
 
-                    {{-- <div>
+                    <div>
                         <label for="estado"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Estado de la herramienta</label>
                         <select name="estado" id="estado"
@@ -108,16 +108,16 @@
                             @else
                                 border-gray-300 dark:border-gray-600
                             @enderror>
-                            <option value="" selected disabled>Selecciona el estado de la herramienta</option>
-                            <option value="Nuevo">Nuevo</option>
-                            <option value="Buen Estado">Buen Estado</option>
-                            <option value="Dañado">Dañado</option>
-                            <option value="Reparación">En reparación</option>
+                            <option value="" disabled>Selecciona el estado de la herramienta</option>
+                            <option value="Nuevo" {{ $herramienta->estado == 'Nuevo' ? 'selected' : '' }}>Nuevo</option>
+                            <option value="Buen Estado" {{ $herramienta->estado == 'Buen Estado' ? 'selected' : '' }}>Buen Estado</option>
+                            <option value="Dañado" {{ $herramienta->estado == 'Dañado' ? 'selected' : '' }}>Dañado</option>
+                            <option value="Reparación" {{ $herramienta->estado == 'Reparación' || $herramienta->estado == 'En reparación' ? 'selected' : '' }}>En reparación</option>
                         </select>
                         @error('estado')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
-                    </div> --}}
+                    </div>
 
                     {{-- <div>
                         <label for="contrasena"

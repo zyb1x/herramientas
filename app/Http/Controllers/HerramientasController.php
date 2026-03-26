@@ -115,8 +115,8 @@ class HerramientasController extends Controller
                 'id_categoria'       => 'required',
                 'nombre_herramienta' => 'required',
                 'existencia'         => 'required|integer',
+                'estado'             => 'required',
                 'imagen'             => 'nullable|mimes:jpeg,png,jpg|max:2048'
-                // estado y disponible eliminados porque no están en el form
             ],
             [
                 'id_categoria.required'       => 'La categoría es obligatoria.',
@@ -131,6 +131,7 @@ class HerramientasController extends Controller
         $herramienta->id_categoria       = $request->id_categoria;
         $herramienta->nombre_herramienta = $request->nombre_herramienta;
         $herramienta->existencia         = $request->existencia;
+        $herramienta->estado             = $request->estado;
 
         if ($request->hasFile('imagen')) {
             if ($herramienta->imagen && !str_contains($herramienta->imagen, 'producto_default')) {

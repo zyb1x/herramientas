@@ -15,7 +15,8 @@ class CarritoController extends Controller
     public function index()
     {
         $items = Cart::content();
-        return view('carrito.carrito', compact('items'));
+        $empleados = \App\Models\Empleados::orderBy('nombre')->get();
+        return view('carrito.carrito', compact('items', 'empleados'));
     }
 
     public function agregarHerramienta(Request $request)

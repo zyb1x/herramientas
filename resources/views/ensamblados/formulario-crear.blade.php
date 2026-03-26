@@ -56,14 +56,20 @@
 
                 <div class="flex gap-3">
                     <div class="flex-1">
-                        <label for="buscar_id" class="block mb-2 text-sm font-medium text-white">ID del Ensamblado</label>
-                        <input type="number" id="buscar_id" min="1" placeholder="Ej: 15"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <label for="buscar_id" class="block mb-2 text-sm font-medium text-white">Selecciona un Ensamblado Existente</label>
+                        <select id="buscar_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                            <option value="">-- Selecciona uno --</option>
+                            @foreach($ensamblados as $ens)
+                                <option value="{{ $ens->id_ensamblado }}">
+                                    #{{ $ens->id_ensamblado }} - {{ $ens->nombre_ensamblado ?? ($ens->material->nombre_material ?? 'Material') }} (ID Empleado: {{ $ens->id_empleado }})
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="flex items-end">
                         <button onclick="buscarEnsamblado()"
                             class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 transition-colors">
-                            Buscar
+                            Cargar Datos
                         </button>
                     </div>
                 </div>

@@ -74,7 +74,7 @@
 
                                     {{-- Columna: Estatus + Acción --}}
                                     <div
-                                        class="md:col-span-3 order-1 md:order-3 flex items-center justify-between md:flex-col md:items-end md:justify-center gap-2">
+                                        class="md:col-span-3 order-1 md:order-3 flex flex-col items-end justify-center gap-2">
 
                                         {{-- Badge de estatus --}}
                                         @php
@@ -87,25 +87,57 @@
                                                     => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
                                                 default => 'bg-blue-100 text-blue-800',
                                             };
+                                            $hasHerramientas = $prestamo->detalles->whereNotNull('id_herramienta')->count() > 0;
+                                            $hasMateriales = $prestamo->detalles->whereNotNull('id_material')->count() > 0;
                                         @endphp
+                                        <div class="flex gap-2 mb-2">
+                                            @if($hasHerramientas)
+                                            <span class="inline-flex items-center rounded-lg bg-gray-200 px-2.5 py-1 text-xs font-semibold text-gray-800" title="Contiene Herramientas">
+                                                🛠 Herramientas
+                                            </span>
+                                            @endif
+                                            @if($hasMateriales)
+                                            <span class="inline-flex items-center rounded-lg bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-800" title="Contiene Materiales">
+                                                📦 Material
+                                            </span>
+                                            @endif
+                                        </div>
+
                                         <span
                                             class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $badgeClasses }}">
                                             {{ $prestamo->estatus_general }}
                                         </span>
 
-                                        {{-- Botón Ver detalle --}}
-                                        <a href="{{ route('prestamos.show', $prestamo->id_prestamo) }}"
-                                            class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-900
-                                                  bg-orange-500 hover:bg-[#023047] text-white hover:text-orange-500 duration-150">
-                                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                            </svg>
-                                            Ver detalle
-                                        </a>
+                                        <div class="flex gap-2 mt-2">
+                                            {{-- Botón Devolver --}}
+                                            @if($prestamo->estatus_general !== 'Cerrado')
+                                                <form action="{{ route('devoluciones.index') }}" method="GET">
+                                                    <input type="hidden" name="id_prestamo" value="{{ $prestamo->id_prestamo }}">
+                                                    <button type="submit"
+                                                        class="inline-flex items-center gap-1.5 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-white
+                                                            bg-green-600 hover:bg-green-700 duration-150">
+                                                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                                                        </svg>
+                                                        Devolver
+                                                    </button>
+                                                </form>
+                                            @endif
+
+                                            {{-- Botón Ver detalle --}}
+                                            <a href="{{ route('prestamos.show', $prestamo->id_prestamo) }}"
+                                                class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-900
+                                                    bg-orange-500 hover:bg-[#023047] text-white hover:text-orange-500 duration-150">
+                                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
+                                                Detalles
+                                            </a>
+                                        </div>
                                     </div>
 
                                 </div>

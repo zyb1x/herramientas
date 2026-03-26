@@ -157,9 +157,15 @@
                                 ID del Empleado
                                 <span class="text-gray-500 font-normal">(quien recibe los artículos)</span>
                             </label>
-                            <input type="number" name="id_empleado" id="id_empleado" value="{{ old('id_empleado') }}"
-                                class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 placeholder-gray-400"
-                                placeholder="Ej. 42" min="1" required>
+                            <select name="id_empleado" id="id_empleado" 
+                                class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5" required>
+                                <option value="" disabled selected>Selecciona al empleado...</option>
+                                @foreach($empleados as $emp)
+                                    <option value="{{ $emp->id_empleado }}" {{ old('id_empleado') == $emp->id_empleado ? 'selected' : '' }}>
+                                        #{{ $emp->id_empleado }} - {{ $emp->nombre }} {{ $emp->apellido_p }} {{ $emp->apellido_m }}
+                                    </option>
+                                @endforeach
+                            </select>
                             @error('id_empleado')
                                 <p class="mt-1 text-xs text-red-400">{{ $message }}</p>
                             @enderror

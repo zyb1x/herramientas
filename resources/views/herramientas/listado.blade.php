@@ -94,7 +94,13 @@
                                             {{ $herramienta->existencia }}
                                         </td>
                                         <td class="px-4 py-3">
-                                            {{ $herramienta->estado }}
+                                            @if($herramienta->estado == 'Dañado')
+                                                <span class="bg-red-100 text-red-800 text-xs font-semibold px-2 py-0.5 rounded border border-red-400">Dañado</span>
+                                            @elseif($herramienta->estado == 'Reparación' || $herramienta->estado == 'En reparación')
+                                                <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded border border-yellow-400">En reparación</span>
+                                            @else
+                                                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded border border-green-400">{{ $herramienta->estado }}</span>
+                                            @endif
                                         </td>
                                         <td class="px-4 py-3">
                                             {{ $herramienta->disponible }}

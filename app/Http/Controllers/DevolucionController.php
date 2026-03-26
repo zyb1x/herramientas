@@ -5,14 +5,46 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Devolucion;
 use App\Models\Herramientas;
+use App\Models\Materiales;
 use App\Models\Prestamo;
 use App\Models\DetallePrestamo;
+use App\Models\Ensamblado;
 
 class DevolucionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('devoluciones.index');
+        $prestamosActivos = Prestamo::with([
+            'empleado',
+            'detalles' => function ($q) {
+                $q->where('estatus_articulo', 'Prestado')
+                  ->with(['herramienta', 'material']);
+            }
+        ])
+            ->whereIn('estatus_general', ['Activo', 'Devuelto Parcial'])
+            ->orderBy('id_prestamo', 'desc')
+            ->get();
+
+        if ($request->has('id_prestamo')) {
+            $prestamo = Prestamo::with([
+                'empleado',
+                'detalles' => function ($q) {
+                    $q->where('estatus_articulo', 'Prestado')
+                      ->with(['herramienta', 'material']);
+                }
+            ])->find($request->id_prestamo);
+
+            if ($prestamo && $prestamo->detalles->isEmpty()) {
+                return view('devoluciones.index', compact('prestamosActivos'))
+                    ->with('error', 'Este préstamo no tiene artículos pendientes de devolución.');
+            }
+
+            if ($prestamo) {
+                return view('devoluciones.index', compact('prestamosActivos', 'prestamo'));
+            }
+        }
+
+        return view('devoluciones.index', compact('prestamosActivos'));
     }
 
     public function buscarPrestamo(Request $request)
@@ -21,93 +53,85 @@ class DevolucionController extends Controller
             'id_prestamo' => 'required|integer|exists:prestamos,id_prestamo',
         ]);
 
-        $prestamo = Prestamo::with([
-            'empleado',
-            'detalles' => function ($q) {
-                $q->whereNotNull('id_herramienta')
-                    ->where('estatus_articulo', 'Prestado')
-                    ->with('herramienta');
-            }
-        ])->findOrFail($request->id_prestamo);
-
-        if ($prestamo->detalles->isEmpty()) {
-            return redirect()->route('devoluciones.index')
-                ->with('error', 'Este préstamo no tiene herramientas pendientes de devolución.')
-                ->withInput();
-        }
-
-        return view('devoluciones.index', compact('prestamo'));
+        return redirect()->route('devoluciones.index', ['id_prestamo' => $request->id_prestamo]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'id_prestamo'                        => 'required|integer|exists:prestamos,id_prestamo',
-            'devoluciones'                       => 'required|array',
-            'devoluciones.*.id_herramienta'      => 'required|integer|exists:herramientas,id_herramienta',
-            'devoluciones.*.cantidad'            => 'required|integer|min:1',
-            'devoluciones.*.estatus_herramienta' => 'required|in:Nuevo,Buen Estado,Dañado,Reparacion',
+            'ensamblado_nombre'                  => 'nullable|string|max:255',
+            'ensamblado_cantidad'                => 'nullable|integer|min:1',
+            'devoluciones'                       => 'nullable|array',
+            'materiales_sobrantes'               => 'nullable|array',
         ]);
 
         $prestamo = Prestamo::with([
             'empleado',
             'detalles' => function ($q) {
-                $q->whereNotNull('id_herramienta')
-                    ->where('estatus_articulo', 'Prestado');
+                $q->where('estatus_articulo', 'Prestado');
             }
         ])->findOrFail($request->id_prestamo);
 
-        foreach ($request->devoluciones as $item) {
-            $detalle = $prestamo->detalles
-                ->firstWhere('id_herramienta', $item['id_herramienta']);
-
-            if (!$detalle) {
-                return redirect()->route('devoluciones.index')
-                    ->with('error', 'Una de las herramientas no corresponde a este préstamo.');
-            }
-
-            if ((int) $item['cantidad'] !== (int) $detalle->cantidad) {
-                $herramienta = Herramientas::find($item['id_herramienta']);
-                return redirect()->route('devoluciones.index')
-                    ->with('error', "Debes devolver exactamente {$detalle->cantidad} unidad(es) de \"{$herramienta->nombre_herramienta}\".");
-            }
-        }
-
         $registradas = 0;
 
-        foreach ($request->devoluciones as $item) {
-            $cantidad    = (int) $item['cantidad'];
-            $herramienta = Herramientas::findOrFail($item['id_herramienta']);
-
-            $existenciaAntes   = $herramienta->existencia;
-            $existenciaDespues = $existenciaAntes + $cantidad;
-
-            Devolucion::create([
-                'id_prestamo'         => $request->id_prestamo,
-                'id_herramienta'      => $herramienta->id_herramienta,
-                'id_empleado'         => $prestamo->id_empleado,
-                'cantidad_devuelta'   => $cantidad,
-                'existencia_antes'    => $existenciaAntes,
-                'existencia_despues'  => $existenciaDespues,
-                'estatus_herramienta' => $item['estatus_herramienta'],
+        // 1. Registrar Ensamblado y Consumir Materiales
+        // Automáticamente dar por consumidos todos los materiales prestados de este préstamo
+        $detallesMateriales = $prestamo->detalles->whereNotNull('id_material')->where('estatus_articulo', 'Prestado');
+        foreach ($detallesMateriales as $detalle) {
+            DetallePrestamo::where('id_detalle', $detalle->id_detalle)->update([
+                'estatus_articulo'      => 'Devuelto',
+                'fecha_devolucion_real' => now(),
             ]);
-
-            $herramienta->increment('existencia', $cantidad);
-            $herramienta->update(['estado' => $item['estatus_herramienta']]);
-
-            DetallePrestamo::where('id_prestamo', $request->id_prestamo)
-                ->where('id_herramienta', $herramienta->id_herramienta)
-                ->where('estatus_articulo', 'Prestado')
-                ->update([
-                    'estatus_articulo'      => 'Devuelto',
-                    'fecha_devolucion_real' => now(),
-                ]);
-
             $registradas++;
         }
 
+        if (!empty($request->ensamblado_nombre)) {
+            Ensamblado::create([
+                'id_empleado'         => $prestamo->id_empleado,
+                'nombre_ensamblado'   => $request->ensamblado_nombre,
+                'cantidad_ensamblada' => $request->ensamblado_cantidad ?? 1,
+            ]);
+            $registradas++;
+        }
+
+        // 2. Registrar Devoluciones de Herramientas
+        if ($request->has('devoluciones')) {
+            foreach ($request->devoluciones as $item) {
+                $detalle = $prestamo->detalles->firstWhere('id_herramienta', $item['id_herramienta']);
+                if (!$detalle) continue;
+
+                $cantidad = (int) $item['cantidad'];
+                $herramienta = Herramientas::findOrFail($item['id_herramienta']);
+
+                $existenciaAntes   = $herramienta->existencia;
+                $existenciaDespues = $existenciaAntes + $cantidad;
+
+                Devolucion::create([
+                    'id_prestamo'         => $request->id_prestamo,
+                    'id_herramienta'      => $herramienta->id_herramienta,
+                    'id_empleado'         => $prestamo->id_empleado,
+                    'cantidad_devuelta'   => $cantidad,
+                    'existencia_antes'    => $existenciaAntes,
+                    'existencia_despues'  => $existenciaDespues,
+                    'estatus_herramienta' => $item['estatus_herramienta'],
+                ]);
+
+                $herramienta->increment('existencia', $cantidad);
+                $herramienta->update(['estado' => $item['estatus_herramienta']]);
+
+                DetallePrestamo::where('id_detalle', $detalle->id_detalle)
+                    ->update([
+                        'estatus_articulo'      => 'Devuelto',
+                        'fecha_devolucion_real' => now(),
+                    ]);
+
+                $registradas++;
+            }
+        }
+
+        // 3. Actualizar Estatus General del Préstamo
         $pendientes = DetallePrestamo::where('id_prestamo', $request->id_prestamo)
-            ->whereNotNull('id_herramienta')
             ->where('estatus_articulo', 'Prestado')
             ->count();
 
@@ -119,12 +143,12 @@ class DevolucionController extends Controller
                 ->update(['estatus_general' => 'Devuelto Parcial']);
         }
 
-        if ($registradas === 0) {
+        if ($registradas === 0 && empty($request->ensamblado_nombre)) {
             return redirect()->route('devoluciones.index')
-                ->with('error', 'No se registró ninguna devolución.');
+                ->with('error', 'No se registró ninguna devolución ni ensamble.');
         }
 
         return redirect()->route('devoluciones.index')
-            ->with('success', "Devolución registrada correctamente. ({$registradas} herramienta(s))");
+            ->with('success', "Devolución/Ensamble registrado correctamente.");
     }
 }

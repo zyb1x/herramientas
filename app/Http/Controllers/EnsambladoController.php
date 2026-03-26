@@ -11,15 +11,17 @@ class EnsambladoController extends Controller
 
     public function index()
     {
-        return view('ensamblados.index');
+        $ensamblados = Ensamblado::with('material', 'empleado')->orderBy('id_ensamblado', 'desc')->paginate(15);
+        return view('ensamblados.index', compact('ensamblados'));
     }
 
 
     public function create(Request $request)
     {
         $materiales = Materiales::orderBy('nombre_material')->get();
+        $ensamblados = Ensamblado::with('material')->orderBy('id_ensamblado', 'desc')->get();
         $modo       = $request->query('modo', null); // 'existente' | 'nuevo' | null
-        return view('ensamblados.formulario-crear', compact('materiales', 'modo'));
+        return view('ensamblados.formulario-crear', compact('materiales', 'ensamblados', 'modo'));
     }
 
 
