@@ -10,15 +10,54 @@ use App\Models\DetallePrestamo;
 
 class DevolucionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('devoluciones.index');
+        $prestamos = Prestamo::with('empleado')
+            ->whereIn('estatus_general', ['Activo', 'Devuelto Parcial'])
+            ->whereHas('detalles', function ($q) {
+                $q->whereNotNull('id_herramienta')
+                    ->where('estatus_articulo', 'Prestado');
+            })
+            ->orderByDesc('id_prestamo')
+            ->get();
+
+        if (!$request->filled('id_prestamo')) {
+            return view('devoluciones.index', compact('prestamos'));
+        }
+
+        $prestamo = Prestamo::with([
+            'empleado',
+            'detalles' => function ($q) {
+                $q->whereNotNull('id_herramienta')
+                    ->where('estatus_articulo', 'Prestado')
+                    ->with('herramienta');
+            }
+        ])->find($request->id_prestamo);
+
+        if (!$prestamo || $prestamo->detalles->isEmpty()) {
+            return view('devoluciones.index', compact('prestamos'))
+                ->with('error', 'Este préstamo no tiene herramientas pendientes de devolución.');
+        }
+
+        return view('devoluciones.index', compact('prestamo', 'prestamos'));
     }
 
     public function buscarPrestamo(Request $request)
     {
+        $prestamos = Prestamo::with('empleado')
+            ->whereIn('estatus_general', ['Activo', 'Devuelto Parcial'])
+            ->whereHas('detalles', function ($q) {
+                $q->whereNotNull('id_herramienta')
+                    ->where('estatus_articulo', 'Prestado');
+            })
+            ->orderByDesc('id_prestamo')
+            ->get();
+
         $request->validate([
             'id_prestamo' => 'required|integer|exists:prestamos,id_prestamo',
+        ], [
+
+            'id_prestamo.required' => 'Selecciona el préstamo.',
         ]);
 
         $prestamo = Prestamo::with([
@@ -36,7 +75,7 @@ class DevolucionController extends Controller
                 ->withInput();
         }
 
-        return view('devoluciones.index', compact('prestamo'));
+        return view('devoluciones.index', compact('prestamo', 'prestamos'));
     }
 
     public function store(Request $request)
@@ -47,6 +86,8 @@ class DevolucionController extends Controller
             'devoluciones.*.id_herramienta'      => 'required|integer|exists:herramientas,id_herramienta',
             'devoluciones.*.cantidad'            => 'required|integer|min:1',
             'devoluciones.*.estatus_herramienta' => 'required|in:Nuevo,Buen Estado,Dañado,Reparacion',
+        ], [
+            'id_prestamo.required' => 'Selecciona un prestamo.',
         ]);
 
         $prestamo = Prestamo::with([

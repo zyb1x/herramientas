@@ -50,7 +50,7 @@
 
                     @if (!$isLoginPage && auth()->guard('usuarios')->check())
 
-                        <button id="dropdownDevolverButton" data-dropdown-toggle="dropdownDevolver"
+                        {{-- <button id="dropdownDevolverButton" data-dropdown-toggle="dropdownDevolver"
                             data-dropdown-placement="bottom"
                             class="flex items-center justify-between w-full py-2 px-3 rounded font-medium text-white ml-3 mr-5 md:w-auto
                             hover:bg-orange-500 md:hover:bg-transparent md:border-0 md:hover:text-orange-500 md:p-0 duration-200">
@@ -58,7 +58,7 @@
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m19 9-7 7-7-7" />
                             </svg>
-                        </button>
+                        </button> --}}
                         <ul>
                             <li class="relative">
                                 <button id="dropdownDevolverButton" data-dropdown-toggle="dropdownDevolver"
@@ -112,15 +112,23 @@
                                     <ul class="p-2 text-sm text-body font-medium"
                                         aria-labelledby="dropdownEnsambleButton">
 
-                                        {{-- <li>
-                                            <a href="/materiales/registro"
-                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Devolver
-                                                material</a>
-                                        </li> --}}
-
                                         <li>
-                                            <a href="/ensamblados"
-                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">Registrar ensamble</a>
+                                            <a href="{{ route('ensamblados.index') }}"
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">
+                                                Listado
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('ensamblados.ingresar') }}"
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">
+                                                Registrar ensamble
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('ensamblados.create') }}"
+                                                class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">
+                                                Registrar ensamble nuevo
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -168,6 +176,16 @@
                     <div class="flex items-center gap-2 lg:order-2">
 
                         <button type="button"
+                            class="hidden sm:inline-flex items-center justify-center text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:focus:ring-orange-800 ml-2">
+                            <svg class="mr-1 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                            <a href="/prestamos" class="text-white hover:text-white">Mis Pedidos</a>
+                        </button>
+
+                        <button type="button"
                             class="hidden sm:inline-flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 md:hover:text-orange-500 focus:ring-primary-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none focus:ring-orange-500">
                             <svg aria-hidden="true" class="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
@@ -178,8 +196,7 @@
                         </button>
                         <button type="button"
                             class="hidden sm:inline-flex items-center justify-center text-white bg-primary-700 md:hover:text-orange-500 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-                            <svg aria-hidden="true" class="mr-1 -ml-1 w-5 h-5" fill="currentColor"
-                                viewBox="0 0 20 20">
+                            <svg aria-hidden="true" class="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                                     clip-rule="evenodd"></path>
@@ -281,17 +298,21 @@
                                     <span class="block text-orange-500 truncate text-xs mt-1">ID:
                                         {{ Auth::guard('usuarios')->user()->id }}
                                     </span>
-                                    <span
-                                        class="inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full
-                                        {{ Auth::guard('usuarios')->user()->rol === 'Administrador' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
+                                    <span class="inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full bg-blue-100">
                                         {{ Auth::guard('usuarios')->user()->rol }}
                                     </span>
                                     <span
-                                        class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-orange-500 text-white hover:bg-white hover:text-orange-500 duration-150">
-                                        <a href="/prestamos">
-                                            Mis pedidos
+                                        class="inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full bg-green-500 text-white hover:bg-white hover:text-orange-500 duration-150">
+                                        <a href="/registro">
+                                            Registrar Usuario
                                         </a>
                                     </span>
+                                    {{-- <span
+                                        class="inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full bg-blue-500 text-white hover:bg-white hover:text-orange-500 duration-150">
+                                        <a href="/registro">
+                                            Registrar Empleado
+                                        </a>
+                                    </span> --}}
                                 </div>
                             </div>
                         @endauth

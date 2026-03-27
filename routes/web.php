@@ -92,6 +92,8 @@ Route::middleware('auth:usuarios')->group(function () {
     Route::post('/ensamblados/store',       [EnsambladoController::class, 'store'])->name('ensamblados.store');
     Route::get('/ensamblados/{id}/json',    [EnsambladoController::class, 'show'])->name('ensamblados.show');
     Route::get('/ensamblados/listado',      [EnsambladoController::class, 'listado'])->name('ensamblados.listado');
+    Route::get('ensamblados/ingresar', [EnsambladoController::class, 'ingresar'])->name('ensamblados.ingresar');
+    Route::post('ensamblados/ingresar', [EnsambladoController::class, 'ingresarStore'])->name('ensamblados.ingresar.store');
 
     Route::prefix('carrito')->name('carrito.')->group(function () {
         Route::get('/',                         [CarritoController::class, 'index'])->name('index');

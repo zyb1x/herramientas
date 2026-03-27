@@ -115,6 +115,7 @@
                             <option value="" selected disabled>Selecciona el rol</option>
                             <option value="Administrador">Administrador</option>
                             <option value="Almacenista">Almacenista</option>
+                            <option value="Supervisor">Supervisor</option>
                         </select>
                         @error('rol')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>

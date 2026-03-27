@@ -16,18 +16,28 @@
         @endif
 
         <div class="bg-[#023047] rounded-2xl border border-gray-700 shadow-lg p-5 mb-6">
-            <h2 class="text-lg font-bold text-white mb-4">Paso 1 — Buscar préstamo</h2>
+            <h2 class="text-lg font-bold text-white mb-4">Paso 1 — Seleccionar préstamo</h2>
 
             <form action="{{ route('devoluciones.buscar') }}" method="POST" class="flex gap-3 items-end">
                 @csrf
                 <div class="flex-1">
                     <label for="id_prestamo" class="block mb-2 text-sm font-medium text-gray-300">
-                        ID del Préstamo
+                        Préstamo
                     </label>
-                    <input type="number" name="id_prestamo" id="id_prestamo"
-                        value="{{ isset($prestamo) ? $prestamo->id_prestamo : old('id_prestamo') }}"
-                        class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 placeholder-gray-400"
-                        placeholder="Ej. 12" min="1" required>
+                    <select name="id_prestamo" id="id_prestamo"
+                        class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg
+                       focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5">
+                        <option value="" disabled selected>Selecciona un préstamo</option>
+                        @foreach ($prestamos as $p)
+                            <option value="{{ $p->id_prestamo }}"
+                                {{ isset($prestamo) && $prestamo->id_prestamo == $p->id_prestamo ? 'selected' : '' }}>
+                                #{{ str_pad($p->id_prestamo, 5, '0', STR_PAD_LEFT) }}
+                                — {{ $p->empleado->nombre ?? 'Sin nombre' }}
+                                {{ $p->empleado->apellido_p ?? '' }}
+                                ({{ $p->estatus_general }})
+                            </option>
+                        @endforeach
+                    </select>
                     @error('id_prestamo')
                         <p class="mt-1 text-xs text-red-400">{{ $message }}</p>
                     @enderror

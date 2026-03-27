@@ -134,7 +134,7 @@
                     <div class="flex items-center space-x-4">
                         <button type="submit"
                             class="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                            Agregar al carrito
+                            Solicitar
                         </button>
                         <button type="button" data-modal-toggle="solicitarMaterialModal"
                             class="text-gray-500 inline-flex items-center hover:text-white border border-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-gray-500 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-900">

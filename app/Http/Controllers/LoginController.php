@@ -26,7 +26,7 @@ class LoginController extends Controller
                 'usuario' => 'required|unique:Usuarios,usuario,correo',
                 'contrasena' => 'required|min:6',
                 'conf_contrasena' => 'required|same:contrasena',
-                'rol'   => 'required|in:Administrador,Almacenista',
+                'rol'   => 'required|in:Administrador,Almacenista,Supervisor',
                 'turno' => 'required|in:Matutino,Vespertino,Nocturno',
                 'imagen' => 'required|nullable|max:2048|mimes:jpeg,png,jpg'
             ],
@@ -72,7 +72,7 @@ class LoginController extends Controller
 
 
 
-        return redirect()->route('login')->with('success', 'Usuario creado exitosamente.');
+        return redirect()->route('inicio')->with('success', 'Usuario creado exitosamente.');
     }
 
     public function showLoginForm()

@@ -13,6 +13,8 @@ class Ensamblado extends Model
     protected $fillable = [
         'id_material',
         'id_empleado',
+        'nombre',
+        'cantidad',
         'cantidad_sobrante',
         'existencia_antes',
         'existencia_despues',
@@ -22,5 +24,10 @@ class Ensamblado extends Model
     public function material()
     {
         return $this->belongsTo(Materiales::class, 'id_material', 'id_material');
+    }
+
+    public function empleado()
+    {
+        return $this->belongsTo(Usuarios::class, 'id_empleado', 'id');
     }
 }

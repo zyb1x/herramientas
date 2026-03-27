@@ -11,7 +11,7 @@ class PrestamoController extends Controller
 
     public function index()
     {
-        $prestamos = Prestamo::with(['empleado', 'usuario'])
+        $prestamos = Prestamo::with(['empleado', 'usuario', 'detalles'])
             ->where('id_usuario', Auth::id())
             ->orderByDesc('fecha_prestamo')
             ->paginate(10);

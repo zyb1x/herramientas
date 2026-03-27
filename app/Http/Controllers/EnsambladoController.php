@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Usuarios;
 use Illuminate\Http\Request;
 use App\Models\Ensamblado;
 use App\Models\Materiales;
@@ -11,17 +12,21 @@ class EnsambladoController extends Controller
 
     public function index()
     {
-        return view('ensamblados.index');
+        $ensamblados = Ensamblado::with('empleado')
+            ->orderByDesc('fecha_registro')
+            ->paginate(10);
+
+        return view('ensamblados.index', compact('ensamblados'));
     }
 
-
-    public function create(Request $request)
+    public function create()
     {
-        $materiales = Materiales::orderBy('nombre_material')->get();
-        $modo       = $request->query('modo', null); // 'existente' | 'nuevo' | null
-        return view('ensamblados.formulario-crear', compact('materiales', 'modo'));
-    }
+        $supervisores = Usuarios::where('rol', 'Supervisor')
+            ->orderBy('nombre')
+            ->get();
 
+        return view('ensamblados.formulario-crear', compact('supervisores'));
+    }
 
     public function show($id)
     {
@@ -43,30 +48,68 @@ class EnsambladoController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'id_empleado'             => 'required|integer',
-            'articulos'               => 'required|array|min:1',
-            'articulos.*.id_material' => 'required|integer|exists:materiales,id_material',
-            'articulos.*.cantidad'    => 'required|integer|min:1',
+        $request->validate(
+            [
+                'id_empleado'    => 'required|integer',
+                'nombre'         => 'required|string|max:255',
+                'cantidad'       => 'required|integer|min:1',
+                'fecha_registro' => 'nullable',
+            ],
+            [
+                'id_empleado.required' => 'El supervisor es obligatorio.',
+                'id_empleado.integer' => 'El supervisor es obligatorio.',
+                'nombre.required' => 'El nombre es obligatorio.',
+                'cantidad.required' => 'La cantidad es obligatorio.',
+                'cantidad.min' => 'La cantidad debe ser mayor a 0',
+
+            ]
+        );
+
+        Ensamblado::create([
+            'id_empleado'    => $request->id_empleado,
+            'nombre'         => $request->nombre,
+            'cantidad'       => $request->cantidad,
+            // 'fecha_registro' => $request->fecha_registro,
         ]);
-
-        foreach ($request->articulos as $item) {
-            $material          = Materiales::findOrFail($item['id_material']);
-            $existenciaAntes   = $material->existencia;
-            $existenciaDespues = $existenciaAntes + (int) $item['cantidad'];
-
-            Ensamblado::create([
-                'id_material'        => $material->id_material,
-                'id_empleado'        => $request->id_empleado,
-                'cantidad_sobrante'  => $item['cantidad'],
-                'existencia_antes'   => $existenciaAntes,
-                'existencia_despues' => $existenciaDespues,
-            ]);
-
-            $material->increment('existencia', (int) $item['cantidad']);
-        }
 
         return redirect()->route('ensamblados.index')
             ->with('success', 'Ensamblado registrado correctamente.');
+    }
+
+    public function ingresar()
+    {
+        $supervisores = Usuarios::where('rol', 'Supervisor')
+            ->orderBy('nombre')
+            ->get();
+
+        $ensamblados = Ensamblado::orderBy('nombre')->get();
+
+        return view('ensamblados.formulario-ingresar', compact('supervisores', 'ensamblados'));
+    }
+
+    public function ingresarStore(Request $request)
+    {
+        $request->validate(
+            [
+                'id_ensamblado' => 'required|integer|exists:ensamblados,id_ensamblado',
+                'id_empleado'   => 'required|integer',
+                'cantidad'      => 'required|integer|min:1',
+            ],
+            [
+                'id_empleado.required' => 'El supervisor es obligatorio.',
+                'id_empleado.integer' => 'El supervisor es obligatorio.',
+                'nombre.required' => 'El nombre es obligatorio.',
+                'cantidad.required' => 'La cantidad es obligatorio.',
+                'cantidad.min' => 'La cantidad debe ser mayor a 0',
+
+            ]
+        );
+
+        $ensamblado = Ensamblado::findOrFail($request->id_ensamblado);
+        $ensamblado->cantidad += (int) $request->cantidad;
+        $ensamblado->save();
+
+        return redirect()->route('ensamblados.index')
+            ->with('success', 'Cantidad ingresada correctamente.');
     }
 }
