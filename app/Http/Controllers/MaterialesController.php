@@ -19,22 +19,24 @@ class MaterialesController extends Controller
 
         if ($request->filled('q')) {
             $query->where('nombre_material', 'like', '%' . $request->q . '%');
-            // para agrega más columnas si se quiere buscar en más campos
-            // ->orWhere('descripcion', 'like', '%' . $request->q . '%')
+        }
+
+        if ($request->filled('estatus')) {
+            $query->whereIn('estatus', $request->estatus);
         }
 
         $materiales = $query->get();
 
         return view('materiales.listado', compact('materiales'));
     }
-
-    public function buscar (Request $request){
+    public function buscar(Request $request)
+    {
         $materiales = Materiales::query()
-            ->when($request->filled('q'), function ($query) use ($request){
+            ->when($request->filled('q'), function ($query) use ($request) {
                 $query->where('nombre_material', 'like', '%' . $request->q . '%');
             })
             ->get();
-            return response()->json($materiales);
+        return response()->json($materiales);
     }
 
     public function create()

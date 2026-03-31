@@ -22,7 +22,7 @@ class HerramientasController extends Controller
         return view('herramientas.herramientas', compact('herramientas'));
     }
 
-    
+
     public function buscar(Request $request)
     {
         $herramientas = Herramientas::with('categoria') // ← esto es lo que falta
@@ -36,17 +36,20 @@ class HerramientasController extends Controller
 
     public function listado(Request $request)
     {
-        $query = Herramientas::query();
+        $query = Herramientas::with('categoria');
 
         if ($request->filled('q')) {
             $query->where('nombre_herramienta', 'like', '%' . $request->q . '%');
-            // Agrega más columnas si quieres buscar en más campos:
-            // ->orWhere('descripcion', 'like', '%' . $request->q . '%')
+        }
+
+        if ($request->filled('categorias')) {
+            $query->whereIn('id_categoria', $request->categorias);
         }
 
         $herramientas = $query->get();
+        $categorias   = Categoria::all(); // ← agregar esto
 
-        return view('herramientas.listado', compact('herramientas'));
+        return view('herramientas.listado', compact('herramientas', 'categorias'));
     }
 
     public function create()
