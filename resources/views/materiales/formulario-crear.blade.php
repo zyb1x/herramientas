@@ -30,7 +30,7 @@
                         @enderror
                     </div>
 
-                    <div>
+                    <div class="sm:col-span-2">
                         <label for="existencia"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Existencia</label>
                         <input type="number" name="existencia" id="existencia" value="{{ old('existencia') }}"
@@ -45,7 +45,7 @@
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
                     </div>
-                    <div>
+                    {{-- <div>
                         <label for="estatus" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Estado de
                             la herramienta</label>
                         <select name="estatus" id="estatus"
@@ -62,7 +62,7 @@
                         @error('estatus')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
-                    </div>
+                    </div> --}}
 
                 </div>
 

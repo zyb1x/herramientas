@@ -22,9 +22,10 @@ class HerramientasController extends Controller
         return view('herramientas.herramientas', compact('herramientas'));
     }
 
+    
     public function buscar(Request $request)
     {
-        $herramientas = Herramientas::query()
+        $herramientas = Herramientas::with('categoria') // ← esto es lo que falta
             ->when($request->filled('q'), function ($query) use ($request) {
                 $query->where('nombre_herramienta', 'like', '%' . $request->q . '%');
             })

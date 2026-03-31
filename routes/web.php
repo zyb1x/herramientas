@@ -33,7 +33,9 @@ Route::prefix('herramientas')->group(function () {
     Route::post('/show', [App\Http\Controllers\HerramientasController::class, 'show'])->name('herramientas.show');
     Route::delete('/destroy/{id_herramienta}', [App\Http\Controllers\HerramientasController::class, 'destroy'])->name('herramientas.destroy');
     Route::get('/listado', [App\Http\Controllers\HerramientasController::class, 'listado'])->name('herramientas.listado');
+    Route::get('/buscar', [HerramientasController::class, 'buscar'])->name('herramientas.buscar');
 });
+
 
 //Rutas de materiales
 Route::prefix('materiales')->group(function () {
@@ -45,6 +47,7 @@ Route::prefix('materiales')->group(function () {
     Route::post('/show', [MaterialesController::class, 'show'])->name('materiales.show');
     Route::delete('/destroy/{id_material}', [MaterialesController::class, 'destroy'])->name('materiales.destroy');
     Route::get('/listado', [MaterialesController::class, 'listado'])->name('materiales.listado');
+    Route::get('/buscar', [MaterialesController::class, 'buscar'])->name('materiales.buscar');
 });
 
 

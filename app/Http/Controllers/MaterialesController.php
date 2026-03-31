@@ -19,13 +19,22 @@ class MaterialesController extends Controller
 
         if ($request->filled('q')) {
             $query->where('nombre_material', 'like', '%' . $request->q . '%');
-            // Agrega más columnas si quieres buscar en más campos:
+            // para agrega más columnas si se quiere buscar en más campos
             // ->orWhere('descripcion', 'like', '%' . $request->q . '%')
         }
 
         $materiales = $query->get();
 
         return view('materiales.listado', compact('materiales'));
+    }
+
+    public function buscar (Request $request){
+        $materiales = Materiales::query()
+            ->when($request->filled('q'), function ($query) use ($request){
+                $query->where('nombre_material', 'like', '%' . $request->q . '%');
+            })
+            ->get();
+            return response()->json($materiales);
     }
 
     public function create()
@@ -41,12 +50,12 @@ class MaterialesController extends Controller
             [
                 'nombre_material' => 'required',
                 'existencia' => 'required',
-                'estatus' => 'required',
+                // 'estatus' => 'nullable',
             ],
             [
                 'nombre_material.required' => 'El nombre es obligatorio.',
                 'existencia.required' => 'La existencia es obligatoria.',
-                'estatus.required' => 'El estatus es obligatorio.'
+                // 'estatus.required' => 'El estatus es obligatorio.'
             ]
         );
 
