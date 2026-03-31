@@ -14,7 +14,6 @@ class Ensamblado extends Model
         'id_material',
         'id_empleado',
         'nombre',
-        'cantidad',
         'cantidad_sobrante',
         'existencia_antes',
         'existencia_despues',

@@ -22,10 +22,7 @@ class Empleados extends Authenticatable
         'apellido_p',
         'apellido_m',
         'correo',
-        'usuario',
-        'contrasena',
         'puesto',
-        'area',
         'turno',
         'imagen'
     ];
