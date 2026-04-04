@@ -48,7 +48,7 @@
                             component</span>
                     </a>
 
-                    @if (!$isLoginPage && auth()->guard('usuarios')->check())
+                    @if (!$isLoginPage && session('api_token'))
 
                         {{-- <button id="dropdownDevolverButton" data-dropdown-toggle="dropdownDevolver"
                             data-dropdown-placement="bottom"
@@ -151,28 +151,10 @@
                             @endif
                         </a>
                     @endif
-
-                    {{-- @if (!$isLoginPage && auth()->guard('usuarios')->check())
-                        <form action="#" method="GET" class="hidden lg:block lg:pl-2">
-                            <label for="topbar-search" class="sr-only">Buscar herramientas</label>
-                            <div class="relative mt-1 lg:w-96">
-                                <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                    </svg>
-                                </div>
-                                <input type="text" name="q" id="topbar-search"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-9 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                    placeholder="Buscar herramientas">
-                            </div>
-                        </form>
-                    @endif --}}
                 </div>
 
                 {{-- Lado derecho: acciones de usuario --}}
-                @if (!$isLoginPage && auth()->guard('usuarios')->check())
+                @if (!$isLoginPage && session('api_token'))
                     <div class="flex items-center gap-2 lg:order-2">
 
                         <button type="button"
@@ -274,14 +256,14 @@
 
 
                         {{-- Avatar del usuario con dropdown --}}
-                        @auth('usuarios')
+                        @if(session('usuario'))
                             <button type="button"
                                 class="flex text-sm rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                                 id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                                 data-dropdown-placement="bottom">
                                 <span class="sr-only">Abrir menú de usuario</span>
                                 <img class="w-8 h-8 rounded-full object-cover border-2 border-gray-300 dark:border-gray-500"
-                                    src="{{ Auth::guard('usuarios')->user()->imagen ?? asset('imagenes/default.jpg') }}"
+                                    src="{{ session('usuario')['imagen'] ?? asset('imagenes/default.jpg') }}"
                                     alt="Avatar">
                             </button>
 
@@ -290,16 +272,16 @@
                                 class="z-50 hidden bg-white border border-gray-200 rounded-lg shadow-lg w-56 dark:bg-gray-700 dark:border-gray-600">
                                 <div class="px-4 py-3 text-sm">
                                     <span class="block font-semibold text-gray-900 dark:text-white">
-                                        {{ Auth::guard('usuarios')->user()->nombre }}
+                                        {{ session('usuario')['nombre'] }}
                                     </span>
                                     <span class="block text-gray-500 dark:text-gray-400 truncate text-xs mt-1">
-                                        {{ Auth::guard('usuarios')->user()->correo }}
+                                        {{ session('usuario')['correo'] }}
                                     </span>
                                     <span class="block text-orange-500 truncate text-xs mt-1">ID:
-                                        {{ Auth::guard('usuarios')->user()->id }}
+                                        {{ session('usuario')['id'] }}
                                     </span>
                                     <span class="inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full bg-blue-100">
-                                        {{ Auth::guard('usuarios')->user()->rol }}
+                                        {{ session('usuario')['rol'] }}
                                     </span>
                                     <span
                                         class="inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full bg-green-500 text-white hover:bg-white hover:text-orange-500 duration-150">
@@ -315,54 +297,56 @@
                                     </span> --}}
                                 </div>
                             </div>
-                        @endauth
+                    @endif
 
-                        {{-- Botón cerrar sesión --}}
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit"
-                                class="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                                title="Cerrar sesión">
-                                <span class="sr-only">Cerrar sesión</span>
-                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 16 16">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3" />
-                                </svg>
-                            </button>
-                        </form>
+                    {{-- Botón cerrar sesión --}}
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                            class="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                            title="Cerrar sesión">
+                            <span class="sr-only">Cerrar sesión</span>
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 16 16">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3" />
+                            </svg>
+                        </button>
+                    </form>
 
-                    </div>
+                </div>
                 @endif
 
                 @if ($isRegistroPage || $isAvisoPage)
-                    @guest('usuarios')
+                    @if (!session('api_token'))
+                        <a href="{{ route('login') }}">Iniciar sesión</a>
+                    @endif
+                    {{-- @guest('usuarios')
                         <a href="{{ route('login') }}"
                             class="ml-2 text-gray-500 hover:text-[#fb5607] dark:text-gray-400 dark:hover:text-[#fb5607]">
                             Iniciar sesión
                         </a>
-                    @endguest
+                    @endguest --}}
                 @endif
 
-            </div>
-        </nav>
-    </header>
+                </div>
+            </nav>
+        </header>
 
-    <main class="flex-1">
-        @yield('contenido')
-    </main>
+        <main class="flex-1">
+            @yield('contenido')
+        </main>
 
-    <footer class="p-4 bg-white md:p-8 lg:p-10 dark:bg-[#023047]">
-        <div class="mx-auto max-w-screen-xl text-center">
-            <a href="#"
-                class="flex justify-center items-center text-2xl font-semibold text-gray-900 dark:text-white">
-                <img src="{{ asset('storage/img/logo_herramientas.png') }}" alt="logo" class="h-15 w-auto mr-2">
-                Herramientas
-            </a>
-            <p class="my-6 text-gray-500 dark:text-gray-400"></p>
-            <ul class="flex flex-wrap justify-center items-center mb-6 text-gray-900 dark:text-white">
-                {{-- <li>
+        <footer class="p-4 bg-white md:p-8 lg:p-10 dark:bg-[#023047]">
+            <div class="mx-auto max-w-screen-xl text-center">
+                <a href="#"
+                    class="flex justify-center items-center text-2xl font-semibold text-gray-900 dark:text-white">
+                    <img src="{{ asset('storage/img/logo_herramientas.png') }}" alt="logo" class="h-15 w-auto mr-2">
+                    Herramientas
+                </a>
+                <p class="my-6 text-gray-500 dark:text-gray-400"></p>
+                <ul class="flex flex-wrap justify-center items-center mb-6 text-gray-900 dark:text-white">
+                    {{-- <li>
                     <a href="#" class="mr-4 hover:underline md:mr-6 ">About</a>
                 </li>
                 <li>
@@ -380,53 +364,53 @@
                 <li>
                     <a href="#" class="mr-4 hover:underline md:mr-6">FAQs</a>
                 </li> --}}
-                <li>
-                    <a href="{{ route('aviso.privacidad') }}" class="mr-4 hover:underline md:mr-6">Aviso de
-                        privacidad</a>
-                </li>
-            </ul>
+                    <li>
+                        <a href="{{ route('aviso.privacidad') }}" class="mr-4 hover:underline md:mr-6">Aviso de
+                            privacidad</a>
+                    </li>
+                </ul>
 
-            {{-- <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2021-2022 <a href="#"
+                {{-- <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2021-2022 <a href="#"
                     class="hover:underline">Flowbite™</a>. All Rights Reserved.</span> --}}
-        </div>
-    </footer>
+            </div>
+        </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
 
-    <script>
-        const searchInput = document.getElementById('topbar-search');
+        <script>
+            const searchInput = document.getElementById('topbar-search');
 
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const q = this.value;
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const q = this.value;
 
-                fetch(`/herramientas/buscar?q=${encodeURIComponent(q)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        // Busca el contenedor donde están las herramientas en tu vista
-                        const contenedor = document.getElementById('lista-herramientas');
-                        if (!contenedor) return;
+                    fetch(`/herramientas/buscar?q=${encodeURIComponent(q)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            // Busca el contenedor donde están las herramientas en tu vista
+                            const contenedor = document.getElementById('lista-herramientas');
+                            if (!contenedor) return;
 
-                        contenedor.innerHTML = '';
+                            contenedor.innerHTML = '';
 
-                        if (data.length === 0) {
-                            contenedor.innerHTML =
-                                '<p class="text-gray-500">No se encontraron herramientas.</p>';
-                            return;
-                        }
+                            if (data.length === 0) {
+                                contenedor.innerHTML =
+                                    '<p class="text-gray-500">No se encontraron herramientas.</p>';
+                                return;
+                            }
 
-                        data.forEach(h => {
-                            contenedor.innerHTML += `
+                            data.forEach(h => {
+                                contenedor.innerHTML += `
                             <div class="border rounded p-4">
                                 <p class="font-semibold">${h.nombre_herramienta}</p>
                                 <!-- agrega más campos según tu modelo -->
                             </div>
                         `;
+                            });
                         });
-                    });
-            });
-        }
-    </script>
-</body>
+                });
+            }
+        </script>
+    </body>
 
-</html>
+    </html>

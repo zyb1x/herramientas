@@ -1,26 +1,24 @@
 @extends('plantilla.app')
 
-@section('titulo', 'Detalle del Préstamo #' . str_pad($prestamo->id_prestamo, 5, '0', STR_PAD_LEFT))
+@section('titulo', 'Detalle del Préstamo #' . str_pad($prestamo['id_prestamo'], 5, '0', STR_PAD_LEFT))
 
 @section('contenido')
-
     <div class="max-w-5xl mx-auto px-4 py-6">
 
         {{-- Encabezado --}}
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-white">
-                    Préstamo #{{ str_pad($prestamo->id_prestamo, 5, '0', STR_PAD_LEFT) }}
+                    Préstamo #{{ str_pad($prestamo['id_prestamo'], 5, '0', STR_PAD_LEFT) }}
                 </h1>
                 <p class="text-gray-400 text-sm mt-1">
-                    Registrado el {{ \Carbon\Carbon::parse($prestamo->fecha_prestamo)->format('d/m/Y \a \l\a\s H:i') }}
-                    · por <span class="text-orange-500 font-bold">{{ $prestamo->usuario->nombre ?? '—' }}</span>
+                    Registrado el {{ \Carbon\Carbon::parse($prestamo['fecha_prestamo'])->format('d/m/Y \a \l\a\s H:i') }}
+                    · por <span class="text-orange-500 font-bold">{{ $prestamo['usuario']['nombre'] ?? '—' }}</span>
                 </p>
             </div>
 
-            {{-- Badge estatus general --}}
             @php
-                $badgeClasses = match ($prestamo->estatus_general) {
+                $badgeClasses = match ($prestamo['estatus_general']) {
                     'Activo' => 'bg-green-500/20 text-green-400 border border-green-500/40',
                     'Devuelto Parcial' => 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40',
                     'Cerrado' => 'bg-gray-500/20 text-gray-400 border border-gray-500/40',
@@ -28,7 +26,7 @@
                 };
             @endphp
             <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium {{ $badgeClasses }}">
-                {{ $prestamo->estatus_general }}
+                {{ $prestamo['estatus_general'] }}
             </span>
         </div>
 
@@ -36,8 +34,8 @@
         <div class="bg-[#023047] rounded-2xl border border-gray-700 shadow-lg p-5 mb-6">
             <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">Empleado</h2>
             <div class="flex items-center gap-4">
-                @if (!empty($prestamo->empleado->imagen))
-                    <img src="{{ $prestamo->empleado->imagen }}"
+                @if (!empty($prestamo['empleado']['imagen']))
+                    <img src="{{ $prestamo['empleado']['imagen'] }}"
                         class="w-14 h-14 rounded-full object-cover border border-gray-600">
                 @else
                     <div class="w-14 h-14 rounded-full bg-gray-700 border border-gray-600 flex items-center justify-center">
@@ -49,31 +47,29 @@
                 @endif
                 <div>
                     <p class="text-white font-semibold">
-                        {{ $prestamo->empleado->nombre ?? '—' }}
-                        {{ $prestamo->empleado->apellido_p ?? '' }}
-                        {{ $prestamo->empleado->apellido_m ?? '' }}
+                        {{ $prestamo['empleado']['nombre'] ?? '—' }}
+                        {{ $prestamo['empleado']['apellido_p'] ?? '' }}
+                        {{ $prestamo['empleado']['apellido_m'] ?? '' }}
                     </p>
                     <p class="text-gray-400 text-sm">
-                        {{ $prestamo->empleado->puesto ?? '' }}
-                        @if (!empty($prestamo->empleado->area))
-                            · {{ $prestamo->empleado->area }}
-                        @endif
+                        {{ $prestamo['empleado']['puesto'] ?? '' }}
                     </p>
-                    <p class="text-gray-500 text-xs mt-0.5">ID #{{ $prestamo->empleado->id_empleado }}</p>
+                    <p class="text-gray-500 text-xs mt-0.5">ID #{{ $prestamo['empleado']['id_empleado'] ?? '—' }}</p>
                 </div>
             </div>
         </div>
 
         {{-- Herramientas --}}
-        @php $herramientas = $prestamo->detalles->whereNotNull('id_herramienta'); @endphp
-        @if ($herramientas->isNotEmpty())
+        @php
+            $herramientas = array_filter($prestamo['detalles'] ?? [], fn($d) => !empty($d['id_herramienta']));
+        @endphp
+        @if (!empty($herramientas))
             <div class="bg-[#023047] rounded-2xl border border-gray-700 shadow-lg overflow-hidden mb-6">
                 <div class="px-5 py-4 bg-[#01263a] border-b border-gray-700">
                     <h2 class="text-lg font-bold text-white">Herramientas</h2>
-                    <p class="text-gray-400 text-xs mt-0.5">{{ $herramientas->count() }} artículo(s)</p>
+                    <p class="text-gray-400 text-xs mt-0.5">{{ count($herramientas) }} artículo(s)</p>
                 </div>
 
-                {{-- Cabecera tabla --}}
                 <div
                     class="hidden md:grid grid-cols-12 gap-2 px-5 py-3 bg-[#01263a] border-b border-gray-700
                             text-gray-400 text-xs font-semibold uppercase tracking-wider">
@@ -86,20 +82,16 @@
                 <div class="divide-y divide-gray-700">
                     @foreach ($herramientas as $detalle)
                         <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center">
-
-                            {{-- ID --}}
                             <div class="col-span-2 md:col-span-1 text-gray-500 text-xs font-mono">
-                                #{{ $detalle->id_herramienta }}
+                                #{{ $detalle['id_herramienta'] }}
                             </div>
-
-                            {{-- Nombre + estado --}}
                             <div class="col-span-10 md:col-span-5">
                                 <p class="text-white text-sm font-medium">
-                                    {{ $detalle->herramienta->nombre_herramienta ?? '—' }}
+                                    {{ $detalle['herramienta']['nombre_herramienta'] ?? '—' }}
                                 </p>
-                                @if ($detalle->herramienta)
+                                @if (!empty($detalle['herramienta']['estado']))
                                     @php
-                                        $estadoColor = match ($detalle->herramienta->estado) {
+                                        $estadoColor = match ($detalle['herramienta']['estado']) {
                                             'Nuevo' => 'text-green-400',
                                             'Buen Estado' => 'text-blue-400',
                                             'Dañado' => 'text-red-400',
@@ -107,19 +99,16 @@
                                             default => 'text-gray-400',
                                         };
                                     @endphp
-                                    <span class="text-xs {{ $estadoColor }}">{{ $detalle->herramienta->estado }}</span>
+                                    <span
+                                        class="text-xs {{ $estadoColor }}">{{ $detalle['herramienta']['estado'] }}</span>
                                 @endif
                             </div>
-
-                            {{-- Cantidad --}}
                             <div class="col-span-4 md:col-span-2 text-center text-gray-300 text-sm">
-                                <span class="md:hidden text-gray-500 text-xs">Cant: </span>{{ $detalle->cantidad }}
+                                {{ $detalle['cantidad'] }}
                             </div>
-
-                            {{-- Estatus artículo --}}
                             <div class="col-span-8 md:col-span-4 text-center">
                                 @php
-                                    $estClasses = match ($detalle->estatus_articulo) {
+                                    $estClasses = match ($detalle['estatus_articulo']) {
                                         'Prestado' => 'bg-orange-500/20 text-orange-400',
                                         'Devuelto' => 'bg-green-500/20 text-green-400',
                                         'Perdido' => 'bg-red-500/20 text-red-400',
@@ -130,10 +119,9 @@
                                 @endphp
                                 <span
                                     class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ $estClasses }}">
-                                    {{ $detalle->estatus_articulo }}
+                                    {{ $detalle['estatus_articulo'] }}
                                 </span>
                             </div>
-
                         </div>
                     @endforeach
                 </div>
@@ -141,12 +129,14 @@
         @endif
 
         {{-- Materiales --}}
-        @php $materiales = $prestamo->detalles->whereNotNull('id_material'); @endphp
-        @if ($materiales->isNotEmpty())
+        @php
+            $materiales = array_filter($prestamo['detalles'] ?? [], fn($d) => !empty($d['id_material']));
+        @endphp
+        @if (!empty($materiales))
             <div class="bg-[#023047] rounded-2xl border border-gray-700 shadow-lg overflow-hidden mb-6">
                 <div class="px-5 py-4 bg-[#01263a] border-b border-gray-700">
                     <h2 class="text-lg font-bold text-white">Materiales</h2>
-                    <p class="text-gray-400 text-xs mt-0.5">{{ $materiales->count() }} artículo(s)</p>
+                    <p class="text-gray-400 text-xs mt-0.5">{{ count($materiales) }} artículo(s)</p>
                 </div>
 
                 <div
@@ -161,34 +151,26 @@
                 <div class="divide-y divide-gray-700">
                     @foreach ($materiales as $detalle)
                         <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center">
-
-                            {{-- ID --}}
                             <div class="col-span-2 md:col-span-1 text-gray-500 text-xs font-mono">
-                                #{{ $detalle->id_material }}
+                                #{{ $detalle['id_material'] }}
                             </div>
-
-                            {{-- Nombre + estatus --}}
                             <div class="col-span-10 md:col-span-5">
                                 <p class="text-white text-sm font-medium">
-                                    {{ $detalle->material->nombre_material ?? '—' }}
+                                    {{ $detalle['material']['nombre_material'] ?? '—' }}
                                 </p>
-                                @if ($detalle->material)
+                                @if (!empty($detalle['material']['estatus']))
                                     <span
-                                        class="text-xs {{ $detalle->material->estatus === 'Disponible' ? 'text-green-400' : 'text-red-400' }}">
-                                        {{ $detalle->material->estatus }}
+                                        class="text-xs {{ $detalle['material']['estatus'] === 'Disponible' ? 'text-green-400' : 'text-red-400' }}">
+                                        {{ $detalle['material']['estatus'] }}
                                     </span>
                                 @endif
                             </div>
-
-                            {{-- Cantidad --}}
                             <div class="col-span-4 md:col-span-2 text-center text-gray-300 text-sm">
-                                {{ $detalle->cantidad }}
+                                {{ $detalle['cantidad'] }}
                             </div>
-
-                            {{-- Estatus artículo --}}
                             <div class="col-span-8 md:col-span-4 text-center">
                                 @php
-                                    $estClasses = match ($detalle->estatus_articulo) {
+                                    $estClasses = match ($detalle['estatus_articulo']) {
                                         'Prestado' => 'bg-orange-500/20 text-orange-400',
                                         'Devuelto' => 'bg-green-500/20 text-green-400',
                                         'Perdido' => 'bg-red-500/20 text-red-400',
@@ -199,10 +181,9 @@
                                 @endphp
                                 <span
                                     class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ $estClasses }}">
-                                    {{ $detalle->estatus_articulo }}
+                                    {{ $detalle['estatus_articulo'] }}
                                 </span>
                             </div>
-
                         </div>
                     @endforeach
                 </div>
@@ -221,5 +202,4 @@
         </div>
 
     </div>
-
 @endsection

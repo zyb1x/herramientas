@@ -2,171 +2,219 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categoria;
-use App\Models\Herramientas;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+
 
 class HerramientasController extends Controller
 {
+
+    protected string $apiUrl;
+
+    public function __construct()
+    {
+        $this->apiUrl = env('API_URL', 'http://127.0.0.1:8000/api');
+    }
+
+    // GET /herramientas
     public function index(Request $request)
     {
-        $query = Herramientas::query();
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/herramientas");
 
-        if ($request->filled('q')) {
-            $query->where('nombre_herramienta', 'like', '%' . $request->q . '%');
-        }
-
-        $herramientas = $query->get();
+        $herramientas = $response->successful() ? $response->json()['data'] : [];
 
         return view('herramientas.herramientas', compact('herramientas'));
     }
 
-
+    // GET /herramientas/buscar — devuelve JSON para búsqueda en tiempo real
     public function buscar(Request $request)
     {
-        $herramientas = Herramientas::with('categoria') // ← esto es lo que falta
-            ->when($request->filled('q'), function ($query) use ($request) {
-                $query->where('nombre_herramienta', 'like', '%' . $request->q . '%');
-            })
-            ->get();
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/herramientas");
 
-        return response()->json($herramientas);
+        $herramientas = $response->successful() ? $response->json()['data'] : [];
+
+        // Filtrar por nombre si viene el parámetro q
+        if ($request->filled('q')) {
+            $q = strtolower($request->q);
+            $herramientas = array_filter($herramientas, function ($h) use ($q) {
+                return str_contains(strtolower($h['nombre_herramienta']), $q);
+            });
+        }
+
+        return response()->json(array_values($herramientas));
     }
 
+    // GET /herramientas/listado
     public function listado(Request $request)
     {
-        $query = Herramientas::with('categoria');
+        $responseH = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/herramientas");
 
+        $herramientas = $responseH->successful() ? $responseH->json()['data'] : [];
+
+        // obtener categorias
+        $responseC = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/categorias");
+
+        $categorias = $responseC->successful() ? $responseC->json()['data'] : [];
+
+        // filtrar por nombre
         if ($request->filled('q')) {
-            $query->where('nombre_herramienta', 'like', '%' . $request->q . '%');
+            $q = strtolower($request->q);
+            $herramientas = array_filter($herramientas, function ($h) use ($q) {
+                return str_contains(strtolower($h['nombre_herramienta']), $q);
+            });
         }
 
+        // filtrar por categorias
         if ($request->filled('categorias')) {
-            $query->whereIn('id_categoria', $request->categorias);
+            $herramientas = array_filter($herramientas, function ($h) use ($request) {
+                return in_array($h['id_categoria'], $request->categorias);
+            });
         }
 
-        $herramientas = $query->get();
-        $categorias   = Categoria::all(); // ← agregar esto
+        $herramientas = array_values($herramientas);
 
         return view('herramientas.listado', compact('herramientas', 'categorias'));
     }
 
+    // GET /herramientas/registro
     public function create()
     {
-        $categorias = Categoria::all();
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/categorias");
+
+        $categorias = $response->successful() ? $response->json()['data'] : [];
+
         return view('herramientas.formulario-crear', compact('categorias'));
     }
 
+    // POST /herramientas/store
     public function store(Request $request)
     {
-        $request->validate(
-            [
-                'id_categoria' => 'required',
-                'nombre_herramienta' => 'required',
-                'existencia' => 'required|integer',
-                // 'estado' => 'required',
-                // 'disponible' => 'required',
-                'imagen' => 'required|image|max:2048|mimes:jpeg,png,jpg'
-            ],
-            [
-                'id_categoria.required' => 'La categoría es obligatoria.',
-                'nombre_herramienta.required' => 'El nombre de la herramienta es obligatorio.',
-                'existencia.required' => 'La existencia es obligatoria.',
-                // 'existencia.integer' => 'La existencia debe ser un número entero.',
-                // 'estado.required' => 'El estado es obligatorio.',
-                'disponible.required' => 'La disponibilidad es obligatoria.',
-                'imagen.required' => 'La imagen es obligatoria.',
-                'imagen.mimes' => 'El archivo debe ser una imagen.',
-                'imagen.max' => 'La imagen no debe superar los 2MB.'
-            ]
-        );
+        $request->validate([
+            'id_categoria'       => 'required',
+            'nombre_herramienta' => 'required',
+            'existencia'         => 'required|integer',
+            'imagen'             => 'required|image|max:2048|mimes:jpeg,png,jpg',
+        ], [
+            'id_categoria.required' => 'La categoría es obligatoria.',
+            'nombre_herramienta.required' => 'El nombre de la herramienta es obligatorio.',
+            'existencia.required' => 'La existencia es obligatoria.',
+            'disponible.required' => 'La disponibilidad es obligatoria.',
+            'imagen.required' => 'La imagen es obligatoria.',
+            'imagen.mimes' => 'El archivo debe ser una imagen.',
+            'imagen.max' => 'La imagen no debe superar los 2MB.'
+        ]);
 
-        $herramienta = new Herramientas();
-        $herramienta->id_categoria = $request->id_categoria;
-        $herramienta->nombre_herramienta = $request->nombre_herramienta;
-        $herramienta->existencia = $request->existencia;
-        $herramienta->estado = "Buen Estado";
-        $herramienta->disponible = 1;
-        $herramienta->imagen = '/imagenes/herramientas/producto_default.png'; // Ruta de la imagen por defecto
+        $response = Http::withToken(session('api_token'))
+            ->attach(
+                'imagen',
+                file_get_contents($request->file('imagen')->getRealPath()),
+                $request->file('imagen')->getClientOriginalName()
+            )
+            ->post("{$this->apiUrl}/herramientas", [
+                'id_categoria'       => $request->id_categoria,
+                'nombre_herramienta' => $request->nombre_herramienta,
+                'existencia'         => $request->existencia,
+            ]);
 
-        $herramienta->save();
+        $data = $response->json();
 
-        if ($request->has('imagen')) {
-            $imagen = $request->imagen;
-            $nuevo_nombre = 'herramienta_' . $herramienta->id_herramienta . '.jpg';
-            $ruta = $imagen->storeAs('imagenes/herramientas', $nuevo_nombre, 'public');
-            $herramienta->imagen = '/storage/' . $ruta;
-            $herramienta->save();
+        if (!$data['success']) {
+            return back()->withErrors(['error' => $data['mensaje']])->withInput();
         }
 
-        return redirect()->route('herramientas.listado')->with('success', 'Herramienta añadida exitosamente.');
+        return redirect()->route('herramientas.listado')
+            ->with('success', 'Herramienta añadida exitosamente.');
     }
 
+
+    // GET /herramientas/{id}/edit
     public function edit($id)
     {
-        $herramienta = Herramientas::find($id);
-        $categorias = Categoria::all();
+        $responseH = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/herramientas/{$id}");
+
+        $responseC = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/categorias");
+
+        if (!$responseH->successful()) {
+            return redirect()->route('herramientas.listado')
+                ->with('error', 'Herramienta no encontrada.');
+        }
+
+        $herramienta = $responseH->json()['data'];
+        $categorias  = $responseC->successful() ? $responseC->json()['data'] : [];
+
         return view('herramientas.formulario-editar', compact('herramienta', 'categorias'));
     }
 
+    // POST /herramientas/{id}/actualizar
     public function update(Request $request, $id)
     {
-        $herramienta = Herramientas::find($id);
+        $request->validate([
+            'id_categoria'       => 'required',
+            'nombre_herramienta' => 'required',
+            'existencia'         => 'required|integer',
+            'imagen'             => 'nullable|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'id_categoria.required'       => 'La categoría es obligatoria.',
+            'nombre_herramienta.required' => 'El nombre de la herramienta es obligatorio.',
+            'existencia.required'         => 'La existencia es obligatoria.',
+            'existencia.integer'          => 'La existencia debe ser un número entero.',
+            'imagen.mimes'                => 'La imagen debe ser un archivo de tipo: jpeg, png, jpg.',
+            'imagen.max'                  => 'La imagen no debe superar los 2MB.',
+        ]);
 
-        $request->validate(
-            [
-                'id_categoria'       => 'required',
-                'nombre_herramienta' => 'required',
-                'existencia'         => 'required|integer',
-                'imagen'             => 'nullable|mimes:jpeg,png,jpg|max:2048'
-                // estado y disponible eliminados porque no están en el form
-            ],
-            [
-                'id_categoria.required'       => 'La categoría es obligatoria.',
-                'nombre_herramienta.required' => 'El nombre de la herramienta es obligatorio.',
-                'existencia.required'         => 'La existencia es obligatoria.',
-                'existencia.integer'          => 'La existencia debe ser un número entero.',
-                'imagen.mimes'                => 'La imagen debe ser un archivo de tipo: jpeg, png, jpg.',
-                'imagen.max'                  => 'La imagen no debe superar los 2MB.'
-            ]
-        );
-
-        $herramienta->id_categoria       = $request->id_categoria;
-        $herramienta->nombre_herramienta = $request->nombre_herramienta;
-        $herramienta->existencia         = $request->existencia;
+        $peticion = Http::withToken(session('api_token'));
 
         if ($request->hasFile('imagen')) {
-            if ($herramienta->imagen && !str_contains($herramienta->imagen, 'producto_default')) {
-                $ruta_anterior = str_replace('/storage/', '', $herramienta->imagen);
-                Storage::disk('public')->delete($ruta_anterior);
-            }
-            $nuevo_nombre = 'herramienta_' . $id . '.jpg';
-            $ruta = $request->file('imagen')->storeAs('imagenes/herramientas', $nuevo_nombre, 'public');
-            $herramienta->imagen = '/storage/' . $ruta;
-        } elseif ($request->input('eliminar_imagen') == '1') {
-            if ($herramienta->imagen && !str_contains($herramienta->imagen, 'herramienta_default')) {
-                $ruta_anterior = str_replace('/storage/', '', $herramienta->imagen);
-                Storage::disk('public')->delete($ruta_anterior);
-            }
-            $herramienta->imagen = '/imagenes/herramientas/producto_default.png';
+            $response = $peticion
+                ->attach(
+                    'imagen',
+                    file_get_contents($request->file('imagen')->getRealPath()),
+                    $request->file('imagen')->getClientOriginalName()
+                )
+                ->put("{$this->apiUrl}/herramientas/{$id}", [
+                    'id_categoria'       => $request->id_categoria,
+                    'nombre_herramienta' => $request->nombre_herramienta,
+                    'existencia'         => $request->existencia,
+                ]);
+        } else {
+            $response = $peticion->put("{$this->apiUrl}/herramientas/{$id}", [
+                'id_categoria'       => $request->id_categoria,
+                'nombre_herramienta' => $request->nombre_herramienta,
+                'existencia'         => $request->existencia,
+            ]);
         }
 
-        $herramienta->save();
+        $data = $response->json();
 
-        return redirect()->route('herramientas.listado')->with('success', 'Herramienta actualizada exitosamente.');
+        if (!$data['success']) {
+            return back()->withErrors(['error' => $data['mensaje']])->withInput();
+        }
+
+        return redirect()->route('herramientas.listado')
+            ->with('success', 'Herramienta actualizada exitosamente.');
     }
 
+    // DELETE /herramientas/destroy/{id}
     public function destroy($id)
     {
-        $herramienta = Herramientas::find($id);
+        $response = Http::withToken(session('api_token'))
+            ->delete("{$this->apiUrl}/herramientas/{$id}");
 
-        if ($herramienta) {
-            $herramienta->update(['disponible' => 0]);
+        $data = $response->json();
 
-            return redirect()->route('herramientas.listado')->with('success', 'Estatus cambiado a no disponible exitosamente.');
+        if (!$data['success']) {
+            return redirect()->route('herramientas.listado')
+                ->with('error', $data['mensaje']);
         }
 
-        return redirect()->route('herramientas.listado')->with('error', 'Herramienta no encontrada.');
+        return redirect()->route('herramientas.listado')
+            ->with('success', 'Estatus cambiado a no disponible exitosamente.');
     }
 }

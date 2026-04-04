@@ -17,7 +17,7 @@
                     </ul>
                 </div>
             @endif --}}
-            <form action="/herramientas/{{ $herramienta->id_herramienta }}/actualizar" method="POST"
+            <form action="/herramientas/{{ $herramienta['id_herramienta'] }}/actualizar" method="POST"
                 enctype="multipart/form-data">
                 @csrf
                 <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
@@ -27,7 +27,7 @@
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre
                             de la herramienta</label>
                         <input type="text" name="nombre_herramienta" id="nombre_herramienta"
-                            value="{{ $herramienta->nombre_herramienta }}"
+                            value="{{ $herramienta['nombre_herramienta'] }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             @error('nombre_herramienta')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"    
@@ -54,9 +54,9 @@
                             <option value="" selected disabled>Selecciona una categoría</option>
 
                             @foreach ($categorias as $categoria)
-                                <option value="{{ $categoria->id_categoria }}"
-                                    {{ $herramienta->id_categoria == $categoria->id_categoria ? 'selected' : '' }}>
-                                    {{ $categoria->nombre_categoria }}
+                                <option value="{{ $categoria['id_categoria'] }}"
+                                    {{ $herramienta['id_categoria'] == $categoria['id_categoria'] ? 'selected' : '' }}>
+                                    {{ $categoria['nombre_categoria'] }}
                                 </option>
                             @endforeach
 
@@ -69,7 +69,7 @@
                     <div>
                         <label for="existencia"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Existencia</label>
-                        <input type="number" name="existencia" id="existencia" value="{{ $herramienta->existencia }}"
+                        <input type="number" name="existencia" id="existencia" value="{{ $herramienta['existencia'] }}"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             @error('existencia')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
@@ -174,10 +174,11 @@
                     <div class="sm:col-span-2 flex flex-col items-center justify-center w-full gap-3">
 
                         {{-- Vista previa de imagen actual --}}
-                        <div id="current-image" class="{{ $herramienta->imagen ? '' : 'hidden' }} w-full">
+                        <div id="current-image" class="{{ $herramienta['imagen'] ? '' : 'hidden' }} w-full">
                             <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Imagen actual:</p>
                             <div class="relative inline-block">
-                                <img id="preview-img" src="{{ $herramienta->imagen ? asset($herramienta->imagen) : '' }}"
+                                <img id="preview-img"
+                                    src="{{ $herramienta['imagen'] ? asset($herramienta['imagen']) : '' }}"
                                     alt="Imagen herramienta"
                                     class="h-32 w-auto rounded-lg object-cover border border-gray-300 dark:border-gray-600">
                                 <button type="button" id="remove-image"
@@ -192,7 +193,7 @@
 
                         {{-- Dropzone (oculto si hay imagen) --}}
                         <label for="dropzone-file" id="dropzone"
-                            class="{{ $herramienta->imagen ? 'hidden' : '' }} flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:bg-gray-700 dark:hover:bg-gray-800"
+                            class="{{ $herramienta['imagen'] ? 'hidden' : '' }} flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:bg-gray-700 dark:hover:bg-gray-800"
                             @error('imagen')
                                 style="border-color: #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else

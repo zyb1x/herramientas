@@ -30,23 +30,24 @@
                     <div
                         class="bg-[#023047] rounded-xl border border-gray-500 overflow-hidden hover:border-orange-600 transition-colors flex flex-col shadow-lg duration-400">
                         <div class="p-4 flex flex-col flex-1">
-                            @if ($material->estatus === 'Disponible')
-                                <p class="text-green-500 text-xs font-bold tracking-widest mb-1">{{ $material->estatus }}
+                            @if ($material['estatus'] === 'Disponible')
+                                <p class="text-green-500 text-xs font-bold tracking-widest mb-1">{{ $material['estatus'] }}
                                 </p>
                             @else
-                                <p class="text-red-500 text-xs font-bold tracking-widest mb-1">{{ $material->estatus }}</p>
+                                <p class="text-red-500 text-xs font-bold tracking-widest mb-1">{{ $material['estatus'] }}
+                                </p>
                             @endif
 
                             <h3 class="text-white text-sm font-semibold leading-snug mb-2">
-                                {{ $material->nombre_material }}
+                                {{ $material['nombre_material'] }}
                             </h3>
                             <div class="flex items-center gap-1 mb-3">
                                 <span class="text-gray-400 text-xs">Existencia:</span>
-                                <span class="text-white text-xs font-semibold">{{ $material->existencia }}</span>
+                                <span class="text-white text-xs font-semibold">{{ $material['existencia'] }}</span>
                             </div>
                             <button data-modal-target="solicitarMaterialModal" data-modal-toggle="solicitarMaterialModal"
-                                data-id="{{ $material->id_material }}" data-nombre="{{ $material->nombre_material }}"
-                                data-existencia="{{ $material->existencia }}" data-estatus="{{ $material->estatus }}"
+                                data-id="{{ $material['id_material'] }}" data-nombre="{{ $material['nombre_material'] }}"
+                                data-existencia="{{ $material['existencia'] }}" data-estatus="{{ $material['estatus'] }}"
                                 class="btn-solicitar-material w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -53,8 +53,8 @@
                             <option value="" selected disabled>Selecciona una categoría</option>
 
                             @foreach ($categorias as $categoria)
-                                <option value="{{ $categoria->id_categoria }}">
-                                    {{ $categoria->nombre_categoria }}
+                                <option value="{{ $categoria['id_categoria'] }}">
+                                    {{ $categoria['nombre_categoria'] }}
                                 </option>
                             @endforeach
 
@@ -270,7 +270,7 @@
                 </button>
         </div>
 
-        
+
 
         </form>
         </div>

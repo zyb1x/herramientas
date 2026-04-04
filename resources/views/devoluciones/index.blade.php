@@ -29,12 +29,12 @@
                        focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5">
                         <option value="" disabled selected>Selecciona un préstamo</option>
                         @foreach ($prestamos as $p)
-                            <option value="{{ $p->id_prestamo }}"
-                                {{ isset($prestamo) && $prestamo->id_prestamo == $p->id_prestamo ? 'selected' : '' }}>
-                                #{{ str_pad($p->id_prestamo, 5, '0', STR_PAD_LEFT) }}
-                                — {{ $p->empleado->nombre ?? 'Sin nombre' }}
-                                {{ $p->empleado->apellido_p ?? '' }}
-                                ({{ $p->estatus_general }})
+                            <option value="{{ $p['id_prestamo'] }}"
+                                {{ isset($prestamo) && $prestamo['id_prestamo'] == $p['id_prestamo'] ? 'selected' : '' }}>
+                                #{{ str_pad($p['id_prestamo'], 5, '0', STR_PAD_LEFT) }}
+                                — {{ $p['empleado']['nombre'] ?? 'Sin nombre' }}
+                                {{ $p['empleado']['apellido_p'] ?? '' }}
+                                ({{ $p['estatus_general'] }})
                             </option>
                         @endforeach
                     </select>
@@ -52,14 +52,14 @@
         @isset($prestamo)
             <form action="{{ route('devoluciones.store') }}" method="POST">
                 @csrf
-                <input type="hidden" name="id_prestamo" value="{{ $prestamo->id_prestamo }}">
+                <input type="hidden" name="id_prestamo" value="{{ $prestamo['id_prestamo'] }}">
 
                 {{-- Información del empleado --}}
                 <div class="bg-[#023047] rounded-2xl border border-gray-700 shadow-lg p-5 mb-6">
                     <h2 class="text-lg font-bold text-white mb-4">Empleado del préstamo</h2>
                     <div class="flex items-center gap-4">
-                        @if ($prestamo->empleado->imagen)
-                            <img src="{{ $prestamo->empleado->imagen }}"
+                        @if (!empty($prestamo['empleado']['imagen']))
+                            <img src="{{ $prestamo['empleado']['imagen'] }}"
                                 class="w-12 h-12 rounded-full object-cover border border-gray-600">
                         @else
                             <div
@@ -72,17 +72,14 @@
                         @endif
                         <div>
                             <p class="text-white font-semibold text-sm">
-                                {{ $prestamo->empleado->nombre }}
-                                {{ $prestamo->empleado->apellido_p }}
-                                {{ $prestamo->empleado->apellido_m }}
+                                {{ $prestamo['empleado']['nombre'] ?? '—' }}
+                                {{ $prestamo['empleado']['apellido_p'] ?? '' }}
+                                {{ $prestamo['empleado']['apellido_m'] ?? '' }}
                             </p>
                             <p class="text-gray-400 text-xs mt-0.5">
-                                {{ $prestamo->empleado->puesto }}
-                                @if ($prestamo->empleado->area)
-                                    · {{ $prestamo->empleado->area }}
-                                @endif
+                                {{ $prestamo['empleado']['puesto'] ?? '' }}
                             </p>
-                            <p class="text-gray-500 text-xs">ID #{{ $prestamo->empleado->id_empleado }}</p>
+                            <p class="text-gray-500 text-xs">ID #{{ $prestamo['empleado']['id_empleado'] ?? '—' }}</p>
                         </div>
                     </div>
                 </div>
@@ -92,7 +89,7 @@
 
                     <div class="px-5 py-4 bg-[#01263a] border-b border-gray-700">
                         <h2 class="text-lg font-bold text-white">
-                            Paso 2 — Herramientas del préstamo #{{ $prestamo->id_prestamo }}
+                            Paso 2 — Herramientas del préstamo #{{ $prestamo['id_prestamo'] }}
                         </h2>
                         <p class="text-gray-400 text-xs mt-1">
                             Solo se muestran las herramientas con estatus
@@ -113,45 +110,47 @@
                     </div>
 
                     <div class="divide-y divide-gray-700">
-                        @foreach ($prestamo->detalles as $detalle)
+                        @foreach ($prestamo['detalles'] as $index => $detalle)
                             <div class="grid grid-cols-12 gap-2 px-5 py-4 items-center">
 
-                                <input type="hidden" name="devoluciones[{{ $loop->index }}][id_herramienta]"
-                                    value="{{ $detalle->id_herramienta }}">
-
-                                <input type="hidden" name="devoluciones[{{ $loop->index }}][cantidad]"
-                                    value="{{ $detalle->cantidad }}">
+                                <input type="hidden" name="devoluciones[{{ $index }}][id_herramienta]"
+                                    value="{{ $detalle['id_herramienta'] }}">
+                                <input type="hidden" name="devoluciones[{{ $index }}][cantidad]"
+                                    value="{{ $detalle['cantidad'] }}">
 
                                 <div class="col-span-1 text-gray-300 text-xs font-mono">
-                                    #{{ $detalle->id_herramienta }}
+                                    #{{ $detalle['id_herramienta'] }}
                                 </div>
 
                                 <div class="col-span-3">
-                                    <p class="text-white text-sm font-medium">{{ $detalle->herramienta->nombre_herramienta }}
+                                    <p class="text-white text-sm font-medium">
+                                        {{ $detalle['herramienta']['nombre_herramienta'] ?? '—' }}
                                     </p>
-                                    <span
-                                        class="text-xs
-                                        @if ($detalle->herramienta->estado === 'Nuevo') text-green-400
-                                        @elseif($detalle->herramienta->estado === 'Buen Estado') text-blue-400
-                                        @elseif($detalle->herramienta->estado === 'Dañado') text-red-400
-                                        @else text-yellow-400 @endif">
-                                        {{ $detalle->herramienta->estado }}
-                                    </span>
+                                    @if (!empty($detalle['herramienta']['estado']))
+                                        <span
+                                            class="text-xs
+                                            @if ($detalle['herramienta']['estado'] === 'Nuevo') text-green-400
+                                            @elseif($detalle['herramienta']['estado'] === 'Buen Estado') text-blue-400
+                                            @elseif($detalle['herramienta']['estado'] === 'Dañado') text-red-400
+                                            @else text-yellow-400 @endif">
+                                            {{ $detalle['herramienta']['estado'] }}
+                                        </span>
+                                    @endif
                                 </div>
 
                                 <div class="col-span-1 text-center text-gray-300 text-sm">
-                                    {{ $detalle->cantidad }}
+                                    {{ $detalle['cantidad'] }}
                                 </div>
 
                                 <div class="col-span-1 text-center text-gray-300 text-sm">
-                                    {{ $detalle->herramienta->existencia }}
+                                    {{ $detalle['herramienta']['existencia'] ?? '—' }}
                                 </div>
 
                                 <div class="col-span-1 text-center text-white font-semibold text-sm">
-                                    {{ $detalle->cantidad }}
+                                    {{ $detalle['cantidad'] }}
                                 </div>
 
-                                @php $despues = $detalle->herramienta->existencia + $detalle->cantidad; @endphp
+                                @php $despues = ($detalle['herramienta']['existencia'] ?? 0) + $detalle['cantidad']; @endphp
                                 <div
                                     class="col-span-2 text-center text-sm font-semibold
                                     {{ $despues <= 0 ? 'text-red-400' : ($despues <= 3 ? 'text-yellow-400' : 'text-green-400') }}">
@@ -159,19 +158,18 @@
                                 </div>
 
                                 <div class="col-span-3">
-                                    <select name="devoluciones[{{ $loop->index }}][estatus_herramienta]"
+                                    <select name="devoluciones[{{ $index }}][estatus_herramienta]"
                                         class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 w-full p-2">
                                         <option value="Nuevo">Nuevo</option>
                                         <option value="Buen Estado" selected>Buen Estado</option>
                                         <option value="Dañado">Dañado</option>
-                                        <option value="Reparacion">Reparación</option>
+                                        <option value="Reparación">Reparación</option>
                                     </select>
                                 </div>
 
                             </div>
                         @endforeach
                     </div>
-
                 </div>
 
                 <div class="bg-[#023047] rounded-2xl border border-gray-700 shadow-lg p-5">

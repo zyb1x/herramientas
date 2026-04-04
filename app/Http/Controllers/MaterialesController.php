@@ -2,103 +2,167 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Materiales;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
 
 class MaterialesController extends Controller
 {
+
+    protected string $apiUrl;
+
+    public function __construct()
+    {
+        $this->apiUrl = env('API_URL', 'http://127.0.0.1:8000/api');
+    }
+
+    // GET /materiales
     public function index()
     {
-        $materiales = Materiales::all();
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/materiales");
+
+        $materiales = $response->successful() ? $response->json()['data'] : [];
+
         return view('materiales.materiales', compact('materiales'));
     }
 
+    // GET /materiales/listado
     public function listado(Request $request)
     {
-        $query = Materiales::query();
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/materiales");
+
+        $materiales = $response->successful() ? $response->json()['data'] : [];
 
         if ($request->filled('q')) {
-            $query->where('nombre_material', 'like', '%' . $request->q . '%');
+            $q = strtolower($request->q);
+            $materiales = array_filter($materiales, function ($m) use ($q) {
+                return str_contains(strtolower($m['nombre_material']), $q);
+            });
         }
 
         if ($request->filled('estatus')) {
-            $query->whereIn('estatus', $request->estatus);
+            $materiales = array_filter($materiales, function ($m) use ($request) {
+                return in_array($m['estatus'], $request->estatus);
+            });
         }
 
-        $materiales = $query->get();
+        $materiales = array_values($materiales);
 
         return view('materiales.listado', compact('materiales'));
     }
+
+    // GET /materiales/buscar -  devuelve JSON para busqueda dinamica
     public function buscar(Request $request)
     {
-        $materiales = Materiales::query()
-            ->when($request->filled('q'), function ($query) use ($request) {
-                $query->where('nombre_material', 'like', '%' . $request->q . '%');
-            })
-            ->get();
-        return response()->json($materiales);
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/materiales");
+
+        $materiales = $response->successful() ? $response->json()['data'] : [];
+
+        if ($request->filled('q')) {
+            $q = strtolower($request->q);
+            $materiales = array_filter($materiales, function ($m) use ($q) {
+                return str_contains(strtolower($m['nombre_material']), $q);
+            });
+        }
+
+        return response()->json(array_values($materiales));
     }
 
+    // GET /materiales/registro
     public function create()
     {
         return view('materiales.formulario-crear');
     }
 
+    // POST /materiales/store
     public function store(Request $request)
     {
+        $request->validate([
+            'nombre_material' => 'required',
+            'existencia'      => 'required|integer|min:0',
+        ], [
+            'nombre_material.required' => 'El nombre es obligatorio.',
+            'existencia.required'      => 'La existencia es obligatoria.',
+            'existencia.min'           => 'La existencia no puede ser menor a 0.',
+        ]);
 
-        $materiales  = new Materiales();
-        $request->validate(
-            [
-                'nombre_material' => 'required',
-                'existencia' => 'required',
-                // 'estatus' => 'nullable',
-            ],
-            [
-                'nombre_material.required' => 'El nombre es obligatorio.',
-                'existencia.required' => 'La existencia es obligatoria.',
-                // 'estatus.required' => 'El estatus es obligatorio.'
-            ]
-        );
+        $response = Http::withToken(session('api_token'))
+            ->post("{$this->apiUrl}/materiales", [
+                'nombre_material' => $request->nombre_material,
+                'existencia'      => $request->existencia,
+            ]);
 
-        $materiales->nombre_material = $request->nombre_material;
-        $materiales->existencia = $request->existencia;
-        $materiales->estatus = $request->estatus;
+        $data = $response->json();
 
-        $materiales->save();
-
-        return redirect()->route('materiales.listado')->with('hecho', 'Material añadida exitosamente.');
-    }
-
-    public function edit($id)
-    {
-        $materiales = Materiales::find($id);
-        return view('materiales.formulario-editar')->with('materiales', $materiales);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $materiales = Materiales::find($id);
-
-        $materiales->nombre_material = $request->nombre_material;
-        $materiales->existencia = $request->existencia;
-        $materiales->estatus = $request->estatus;
-
-        $materiales->save();
-
-        return redirect()->route('materiales.listado')->with('hecho', 'Material actualizado exitosamente.');
-    }
-
-    public function destroy($id)
-    {
-        $material = Materiales::find($id);
-
-        if ($material) {
-            $material->update(['estatus' => 'Agotado']);
-
-            return redirect()->route('materiales.listado')->with('success', 'Estatus cambiado a no disponible exitosamente.');
+        if (!$data['success']) {
+            return back()->withErrors(['error' => $data['mensaje']])->withInput();
         }
 
-        return redirect()->route('materiales.listado')->with('error', 'Material no encontrada.');
+        return redirect()->route('materiales.listado')
+            ->with('hecho', 'Material añadido exitosamente.');
+    }
+
+    // GET /materiales/{id}/edit
+    public function edit($id)
+    {
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/materiales/{$id}");
+
+        if (!$response->successful()) {
+            return redirect()->route('materiales.listado')
+                ->with('error', 'Material no encontrado.');
+        }
+
+        $materiales = $response->json()['data'];
+
+        return view('materiales.formulario-editar', compact('materiales'));
+    }
+
+    // POST /materiales/{id}/actualizar
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nombre_material' => 'required',
+            'existencia'      => 'required|integer|min:0',
+        ], [
+            'nombre_material.required' => 'El nombre es obligatorio.',
+            'existencia.required'      => 'La existencia es obligatoria.',
+            'existencia.min'           => 'La existencia no puede ser menor a 0.',
+        ]);
+
+        $response = Http::withToken(session('api_token'))
+            ->put("{$this->apiUrl}/materiales/{$id}", [
+                'nombre_material' => $request->nombre_material,
+                'existencia'      => $request->existencia,
+            ]);
+
+        $data = $response->json();
+
+        if (!$data['success']) {
+            return back()->withErrors(['error' => $data['mensaje']])->withInput();
+        }
+
+        return redirect()->route('materiales.listado')
+            ->with('hecho', 'Material actualizado exitosamente.');
+    }
+
+    // DELETE /materiales/destroy/{id}
+    public function destroy($id)
+    {
+        $response = Http::withToken(session('api_token'))
+            ->delete("{$this->apiUrl}/materiales/{$id}");
+
+        $data = $response->json();
+
+        if (!$data['success']) {
+            return redirect()->route('materiales.listado')
+                ->with('error', $data['mensaje']);
+        }
+
+        return redirect()->route('materiales.listado')
+            ->with('success', 'Estatus cambiado a agotado exitosamente.');
     }
 }

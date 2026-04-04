@@ -3,110 +3,146 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Gloudemans\Shoppingcart\Facades\Cart;
-use App\Models\Herramientas;
-use App\Models\Materiales;
-use App\Models\Prestamo;
-use App\Models\DetallePrestamo;
+
 
 class CarritoController extends Controller
 {
+    protected string $apiUrl;
+
+    public function __construct()
+    {
+        $this->apiUrl = env('API_URL', 'http://127.0.0.1:8000/api');
+    }
+
+    // GET /carrito
     public function index()
     {
         $items = Cart::content();
         return view('carrito.carrito', compact('items'));
     }
 
+    // POST /carrito/agregar/herramienta
     public function agregarHerramienta(Request $request)
     {
         $request->validate([
-            'id'       => 'required|exists:herramientas,id_herramienta',
+            'id'       => 'required|integer',
             'cantidad' => 'required|integer|min:1',
         ]);
 
-        $herramienta = Herramientas::findOrFail($request->id);
+        // Obtener herramienta de la API
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/herramientas/{$request->id}");
 
+        if (!$response->successful()) {
+            return back()->with('error', 'Herramienta no encontrada.');
+        }
+
+        $herramienta = $response->json()['data'];
+
+        if (!$herramienta['disponible']) {
+            return back()->with('error', "La herramienta \"{$herramienta['nombre_herramienta']}\" no está disponible.");
+        }
+
+        // Verificar cantidad en carrito
         $enCarrito = 0;
         foreach (Cart::content() as $item) {
-            if ($item->options->tipo === 'herramienta' && $item->id == $herramienta->id_herramienta) {
+            if ($item->options->tipo === 'herramienta' && $item->id == $herramienta['id_herramienta']) {
                 $enCarrito = $item->qty;
                 break;
             }
         }
 
-        if (($enCarrito + $request->cantidad) > $herramienta->existencia) {
+        if (($enCarrito + $request->cantidad) > $herramienta['existencia']) {
             return back()->with('error', 'La cantidad solicitada excede la existencia disponible.');
         }
 
         Cart::add([
-            'id'      => $herramienta->id_herramienta,
-            'name'    => $herramienta->nombre_herramienta,
+            'id'      => $herramienta['id_herramienta'],
+            'name'    => $herramienta['nombre_herramienta'],
             'qty'     => $request->cantidad,
             'price'   => 0,
             'options' => [
                 'tipo'       => 'herramienta',
-                'existencia' => $herramienta->existencia,
-                'estado'     => $herramienta->estado,
-                'imagen'     => $herramienta->imagen,
+                'existencia' => $herramienta['existencia'],
+                'estado'     => $herramienta['estado'],
+                'imagen'     => $herramienta['imagen'],
             ],
         ]);
 
         return redirect()->route('carrito.index')->with('success', 'Herramienta agregada al carrito.');
     }
 
+    // POST /carrito/agregar/material
     public function agregarMaterial(Request $request)
     {
         $request->validate([
-            'id'       => 'required|exists:materiales,id_material',
+            'id'       => 'required|integer',
             'cantidad' => 'required|integer|min:1',
         ]);
 
-        $material = Materiales::findOrFail($request->id);
+        // Obtener material de la API
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/materiales/{$request->id}");
 
+        if (!$response->successful()) {
+            return back()->with('error', 'Material no encontrado.');
+        }
+
+        $material = $response->json()['data'];
+
+        if ($material['estatus'] === 'Agotado') {
+            return back()->with('error', "El material \"{$material['nombre_material']}\" está agotado.");
+        }
+
+        // Verificar cantidad en carrito
         $enCarrito = 0;
         foreach (Cart::content() as $item) {
-            if ($item->options->tipo === 'material' && $item->id == $material->id_material) {
+            if ($item->options->tipo === 'material' && $item->id == $material['id_material']) {
                 $enCarrito = $item->qty;
                 break;
             }
         }
 
-        if (($enCarrito + $request->cantidad) > $material->existencia) {
+        if (($enCarrito + $request->cantidad) > $material['existencia']) {
             return back()->with('error', 'La cantidad solicitada excede la existencia disponible.');
         }
 
         Cart::add([
-            'id'      => $material->id_material,
-            'name'    => $material->nombre_material,
+            'id'      => $material['id_material'],
+            'name'    => $material['nombre_material'],
             'qty'     => $request->cantidad,
             'price'   => 0,
             'options' => [
                 'tipo'       => 'material',
-                'existencia' => $material->existencia,
-                'estatus'    => $material->estatus,
+                'existencia' => $material['existencia'],
+                'estatus'    => $material['estatus'],
             ],
         ]);
 
         return redirect()->route('carrito.index')->with('success', 'Material agregado al carrito.');
     }
 
+    // DELETE /carrito/eliminar/{rowId}
     public function eliminar($rowId)
     {
         Cart::remove($rowId);
         return redirect()->route('carrito.index')->with('success', 'Artículo eliminado del carrito.');
     }
 
+    // DELETE /carrito/vaciar
     public function vaciar()
     {
         Cart::destroy();
         return redirect()->route('carrito.index')->with('success', 'Carrito vaciado.');
     }
 
+    // POST /carrito/confirmar — manda el prestamo completo a la API
     public function confirmar(Request $request)
     {
         $request->validate([
-            'id_empleado'  => 'required|integer|exists:empleados,id_empleado',
+            'id_empleado'  => 'required|integer',
             'cantidades'   => 'required|array',
             'cantidades.*' => 'required|integer|min:1',
         ]);
@@ -117,6 +153,7 @@ class CarritoController extends Controller
             return back()->with('error', 'El carrito está vacío.');
         }
 
+        // actualizar cantidades en el carrito
         foreach ($request->cantidades as $rowId => $cantidad) {
             $item = Cart::get($rowId);
             if ($item && $cantidad >= 1 && $cantidad <= $item->options->existencia) {
@@ -126,60 +163,34 @@ class CarritoController extends Controller
 
         $items = Cart::content();
 
+        // array de articulos para la API uwu
+        $articulos = [];
         foreach ($items as $item) {
-            if ($item->options->tipo === 'herramienta') {
-                $herramienta = Herramientas::findOrFail($item->id);
-                if ($item->qty > $herramienta->existencia) {
-                    return back()->with('error', "Existencia insuficiente para: {$herramienta->nombre_herramienta}");
-                }
-            } else {
-                $material = Materiales::findOrFail($item->id);
-                if ($item->qty > $material->existencia) {
-                    return back()->with('error', "Existencia insuficiente para: {$material->nombre_material}");
-                }
-            }
+            $articulos[] = [
+                'tipo'     => $item->options->tipo,
+                'id'       => $item->id,
+                'cantidad' => $item->qty,
+            ];
         }
 
-        $prestamo = Prestamo::create([
-            'id_empleado' => $request->id_empleado,
-            'id_usuario'  => Auth::id(),
-        ]);
+        // mandar el prestamo a la API
+        $response = Http::withToken(session('api_token'))
+            ->post("{$this->apiUrl}/prestamos", [
+                'id_empleado' => $request->id_empleado,
+                'articulos'   => $articulos,
+            ]);
 
-        foreach ($items as $item) {
-            if ($item->options->tipo === 'herramienta') {
-                $herramienta = Herramientas::findOrFail($item->id);
+        $data = $response->json();
 
-                DetallePrestamo::create([
-                    'id_prestamo'      => $prestamo->id_prestamo,
-                    'id_herramienta'   => $herramienta->id_herramienta,
-                    'id_material'      => null,
-                    'cantidad'         => $item->qty,
-                    'estatus_articulo' => 'Prestado',
-                ]);
-
-                $herramienta->decrement('existencia', $item->qty);
-            } else {
-                $material = Materiales::findOrFail($item->id);
-
-                DetallePrestamo::create([
-                    'id_prestamo'      => $prestamo->id_prestamo,
-                    'id_herramienta'   => null,
-                    'id_material'      => $material->id_material,
-                    'cantidad'         => $item->qty,
-                    'estatus_articulo' => 'Prestado',
-                ]);
-
-                $material->decrement('existencia', $item->qty);
-
-                if ($material->fresh()->existencia <= 0) {
-                    $material->update(['estatus' => 'Agotado']);
-                }
-            }
+        if (!$data['success']) {
+            return back()->with('error', $data['mensaje']);
         }
 
         Cart::destroy();
 
+        $idPrestamo = $data['data']['id_prestamo'];
+
         return redirect()->route('carrito.index')
-            ->with('success', "Préstamo #{$prestamo->id_prestamo} registrado correctamente.");
+            ->with('success', "Préstamo #{$idPrestamo} registrado correctamente.");
     }
 }

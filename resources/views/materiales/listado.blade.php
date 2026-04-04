@@ -131,22 +131,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if (isset($materiales) && $materiales->count() > 0)
+                            @if (isset($materiales) && count($materiales) > 0)
                                 @foreach ($materiales as $material)
                                     <tr class="border-b dark:border-gray-700">
                                         <th scope="row"
                                             class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            {{ $material->id_material }}
+                                            {{ $material['id_material'] }}
                                         </th>
-                                        <td class="px-4 py-3">{{ $material->nombre_material }}</td>
-                                        <td class="px-4 py-3">{{ $material->existencia }}</td>
+                                        <td class="px-4 py-3">{{ $material['nombre_material'] }}</td>
+                                        <td class="px-4 py-3">{{ $material['existencia'] }}</td>
                                         <td
-                                            class="px-4 py-3 font-semibold {{ $material->estatus === 'Disponible' ? 'text-green-500' : 'text-red-500' }}">
-                                            {{ $material->estatus }}
+                                            class="px-4 py-3 font-semibold {{ $material['estatus'] === 'Disponible' ? 'text-green-500' : 'text-red-500' }}">
+                                            {{ $material['estatus'] }}
                                         </td>
                                         <td class="px-4 py-3 flex items-center justify-end">
-                                            <button id="material-{{ $material->id_material }}-dropdown-button"
-                                                data-dropdown-toggle="material-{{ $material->id_material }}-dropdown"
+                                            <button id="material-{{ $material['id_material'] }}-dropdown-button"
+                                                data-dropdown-toggle="material-{{ $material['id_material'] }}-dropdown"
                                                 class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-orange-300 duration-200 p-1.5 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
                                                 type="button">
                                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"
@@ -155,12 +155,12 @@
                                                         d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                                                 </svg>
                                             </button>
-                                            <div id="material-{{ $material->id_material }}-dropdown"
+                                            <div id="material-{{ $material['id_material'] }}-dropdown"
                                                 class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:divide-gray-600">
                                                 <ul class="py-1 text-sm"
-                                                    aria-labelledby="material-{{ $material->id_material }}-dropdown-button">
+                                                    aria-labelledby="material-{{ $material['id_material'] }}-dropdown-button">
                                                     <li>
-                                                        <a href="{{ route('materiales.edit', $material->id_material) }}"
+                                                        <a href="{{ route('materiales.edit', $material['id_material']) }}"
                                                             class="flex w-full items-center py-2 px-4 hover:bg-orange-300 text-gray-700 duration-300">
                                                             <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg"
                                                                 viewBox="0 0 20 20" fill="currentColor">
@@ -174,7 +174,7 @@
                                                     </li>
                                                     <li>
                                                         <form
-                                                            action="{{ route('materiales.destroy', $material->id_material) }}"
+                                                            action="{{ route('materiales.destroy', $material['id_material']) }}"
                                                             method="POST" class="w-full">
                                                             @csrf
                                                             @method('DELETE')

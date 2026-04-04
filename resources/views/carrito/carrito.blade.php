@@ -169,7 +169,7 @@
                             <label class="block mb-2 text-sm font-medium text-gray-300">
                                 Registrado por
                             </label>
-                            <input type="text" value="{{ Auth::user()->name }}" readonly
+                            <input type="text" value="{{ session('usuario')['nombre'] }}" readonly
                                 class="bg-gray-800 border border-gray-600 text-gray-400 text-sm rounded-lg block w-full p-2.5 cursor-not-allowed">
                         </div>
 

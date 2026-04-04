@@ -2,15 +2,71 @@
 
 namespace App\Http\Controllers;
 
-// use App\Models\Empleados;
 use Illuminate\Http\Request;
-use App\Models\Usuarios;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use App\Models\Usuarios;
 
 
 class LoginController extends Controller
 {
+
+    protected string $apiUrl;
+
+    public function __construct()
+    {
+        $this->apiUrl = env('API_URL', 'http://127.0.0.1:8000/api');
+    }
+
+    // Vista del formulario de login
+    public function showLoginForm()
+    {
+        return view('login.login');
+    }
+
+    // consume la API y guarda token en sesión
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ], [
+            'email.required'    => 'Ingrese un correo válido.',
+            'password.required' => 'Ingrese una contraseña válida.',
+        ]);
+
+        $response = Http::post("{$this->apiUrl}/login", [
+            'correo'     => $request->email,
+            'contrasena' => $request->password,
+        ]);
+
+        if ($response->serverError()) {
+            return back()->withErrors([
+                'error' => 'Error en el servidor. Intentalo más tarde',
+            ])->withInput();
+        }
+
+        $data = $response->json();
+
+        // xredenciales incorrectas
+        if (!$data['success']) {
+            return back()->withErrors([
+                'error' => $data['mensaje'],
+            ])->withInput();
+        }
+
+        // guarda token y datos del usuario en sesion
+        session([
+            'api_token' => $data['data']['token'],
+            'usuario'   => $data['data']['usuario'],
+        ]);
+
+        $request->session()->regenerate();
+
+        return redirect()->route('inicio');
+    }
+
 
     public function create()
     {
@@ -51,23 +107,40 @@ class LoginController extends Controller
             ]
         );
 
-        $usuario = new Usuarios();
-        $usuario->nombre = $request->nombre;
-        $usuario->usuario = $request->usuario;
-        $usuario->correo = $request->correo;
-        $usuario->contrasena = Hash::make($request->contrasena);
-        $usuario->rol = $request->rol;
-        $usuario->turno = $request->turno;
-        $usuario->imagen = $request->imagen;
+        // Construir petición multipart si hay imagen
+        $peticion = Http::withToken(session('api_token'));
 
-        $usuario->save();
+        if ($request->hasFile('imagen')) {
+            $response = $peticion->attach(
+                'imagen',
+                file_get_contents($request->file('imagen')->getRealPath()),
+                $request->file('imagen')->getClientOriginalName()
+            )->post("{$this->apiUrl}/usuarios", [
+                'nombre'          => $request->nombre,
+                'correo'          => $request->correo,
+                'usuario'         => $request->usuario,
+                'contrasena'      => $request->contrasena,
+                'conf_contrasena' => $request->conf_contrasena,
+                'rol'             => $request->rol,
+                'turno'           => $request->turno,
+            ]);
+        } else {
+            $response = $peticion->post("{$this->apiUrl}/usuarios", [
+                'nombre'          => $request->nombre,
+                'correo'          => $request->correo,
+                'usuario'         => $request->usuario,
+                'contrasena'      => $request->contrasena,
+                'conf_contrasena' => $request->conf_contrasena,
+                'rol'             => $request->rol,
+                'turno'           => $request->turno,
+            ]);
+        }
 
-        if ($request->has('imagen')) {
-            $imagen = $request->imagen;
-            $nuevo_nombre = 'usuario_' . $usuario->id . '.jpg';
-            $ruta = $imagen->storeAs('imagenes/usuarios', $nuevo_nombre, 'public');
-            $usuario->imagen = '/storage/' . $ruta;
-            $usuario->save();
+        $data = $response->json();
+
+        if (!$data['success']) {
+            return back()->withErrors(['error' => $data['mensaje']])
+                ->withInput();
         }
 
 
@@ -75,46 +148,15 @@ class LoginController extends Controller
         return redirect()->route('inicio')->with('success', 'Usuario creado exitosamente.');
     }
 
-    public function showLoginForm()
-    {
-        return view('login.login');
-    }
-
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ],
-        [
-            'email.required' => 'Ingrese un correo válido.',
-            'password.required' => 'Ingrese una contraseña válida.'
-        ]);
-
-        $usuario = Usuarios::where('correo', $request->email)->first();
-
-        if (!$usuario) {
-            return back()->withErrors([
-                'error' => 'Credenciales incorrectas'
-            ])->withInput();
-        }
-
-        if (!Hash::check($request->password, $usuario->contrasena)) {
-            return back()->withErrors([
-                'error' => 'La contraseña es incorrecta.'
-            ])->withInput();
-        }
-
-        Auth::guard('usuarios')->login($usuario);
-        $request->session()->regenerate();
-
-        return redirect('/inicio');
-    }
-
+    // POST /logout — revoca token en la API y limpia sesión
     public function logout(Request $request)
     {
-        Auth::guard('usuarios')->logout();
+        // Revocar token en la API
+        Http::withToken(session('api_token'))
+            ->post("{$this->apiUrl}/logout");
 
+        // Limpiar sesión
+        $request->session()->forget(['api_token', 'usuario']);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

@@ -3,141 +3,180 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Empleados;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+
 
 class EmpleadosController extends Controller
 {
+
+    protected string $apiUrl;
+
+    public function __construct()
+    {
+        $this->apiUrl = env('API_URL', 'http://127.0.0.1:8000/api');
+    }
+
+    // GET /empleados
     public function index()
     {
-        $empleados = Empleados::all();
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/empleados");
+
+        $empleados = $response->successful() ? $response->json()['data'] : [];
+
         return view('empleados.index', compact('empleados'));
     }
 
+    // GET /empleados/create
     public function create()
     {
         return view('empleados.create');
     }
 
+    // POST /empleados/store
     public function store(Request $request)
     {
-        $request->validate(
-            [
-                'nombre' => 'required',
-                'apellido_p' => 'required',
-                'apellido_m' => 'required',
-                'correo' => 'required|email|unique:Empleados,correo',
-                'contrasena' => 'required|min:6',
-                'conf_contrasena' => 'required|same:contrasena',
-                'puesto' => 'required',
-                'area' => 'required',
-                'turno' => 'required',
-                'imagen' => 'nullable|image|max:2048'
-            ],
-            [
-                'nombre.required' => 'El nombre es obligatorio.',
-                'apellido_p.required' => 'El apellido paterno es obligatorio.',
-                'apellido_m.required' => 'El apellido materno es obligatorio.',
-                'correo.required' => 'El correo electrónico es obligatorio.',
-                'correo.email' => 'El correo electrónico debe ser una dirección válida.',
-                'correo.unique' => 'Ya existe un empleado con ese correo electrónico.',
-                'contrasena.required' => 'La contraseña es obligatoria.',
-                'contrasena.min' => 'La contraseña debe tener al menos 6 caracteres.',
-                'conf_contrasena.required' => 'La confirmación de la contraseña es obligatoria.',
-                'conf_contrasena.same' => 'Las contraseñas no coinciden.',
-                'puesto.required' => 'El puesto es obligatorio.',
-                'area.required' => 'El área es obligatoria.',
-                'turno.required' => 'El turno es obligatorio.',
-                // 'imagen.image' => 'El archivo debe ser una imagen.',
-                // 'imagen.max' => 'La imagen no debe superar los 2MB.'
-            ]
-        );
+        $request->validate([
+            'nombre'     => 'required',
+            'apellido_p' => 'required',
+            'apellido_m' => 'nullable',
+            'correo'     => 'nullable|email',
+            'puesto'     => 'nullable',
+            'turno'      => 'nullable',
+            'imagen'     => 'nullable|image|max:2048',
+        ], [
+            'nombre.required'     => 'El nombre es obligatorio.',
+            'apellido_p.required' => 'El apellido paterno es obligatorio.',
+            'correo.required'     => 'El correo electrónico es opcional.',
+            'correo.email'        => 'El correo electrónico debe ser una dirección válida.',
+            'turno.required'      => 'Favor de seleccionar un turno.',
+        ]);
 
-        $empleado = new Empleados();
-        $empleado->nombre = $request->nombre;
-        $empleado->apellido_p = $request->apellido_p;
-        $empleado->apellido_m = $request->apellido_m;
-        $empleado->correo = $request->correo;
-        $empleado->contrasena = Hash::make($request->contrasena);
-        $empleado->puesto = $request->puesto;
-        $empleado->area = $request->area;
-        $empleado->turno = $request->turno;
+        $peticion = Http::withToken(session('api_token'));
 
-        $empleado->save();
-
-        if ($request->has('imagen')) {
-            $imagen = $request->imagen;
-            $nuevo_nombre = 'empleado_' . $empleado->id . '.jpg';
-            $ruta = $imagen->storeAs('imagenes/empleados', $nuevo_nombre, 'public');
-            $empleado->imagen = '/storage/' . $ruta;
-            $empleado->save();
+        if ($request->hasFile('imagen')) {
+            $response = $peticion
+                ->attach(
+                    'imagen',
+                    file_get_contents($request->file('imagen')->getRealPath()),
+                    $request->file('imagen')->getClientOriginalName()
+                )
+                ->post("{$this->apiUrl}/empleados", [
+                    'nombre'     => $request->nombre,
+                    'apellido_p' => $request->apellido_p,
+                    'apellido_m' => $request->apellido_m,
+                    'correo'     => $request->correo,
+                    'puesto'     => $request->puesto,
+                    'turno'      => $request->turno,
+                ]);
+        } else {
+            $response = $peticion->post("{$this->apiUrl}/empleados", [
+                'nombre'     => $request->nombre,
+                'apellido_p' => $request->apellido_p,
+                'apellido_m' => $request->apellido_m,
+                'correo'     => $request->correo,
+                'puesto'     => $request->puesto,
+                'turno'      => $request->turno,
+            ]);
         }
 
+        $data = $response->json();
 
+        if (!$data['success']) {
+            return back()->withErrors(['error' => $data['mensaje']])->withInput();
+        }
 
-        return redirect()->route('empleados.index')->with('success', 'Empleado creado exitosamente.');
+        return redirect()->route('empleados.index')
+            ->with('success', 'Empleado creado exitosamente.');
     }
 
-    function edit($id)
+    // GET /empleados/{id}/edit
+    public function edit($id)
     {
-        $empleado = Empleados::findOrFail($id);
-        return view('administradores.formulario-editar')->with('administradores', $empleado);
+        $response = Http::withToken(session('api_token'))
+            ->get("{$this->apiUrl}/empleados/{$id}");
+
+        if (!$response->successful()) {
+            return redirect()->route('empleados.index')
+                ->with('error', 'Empleado no encontrado.');
+        }
+
+        $empleado = $response->json()['data'];
+
+        return view('empleados.formulario-editar', compact('empleado'));
     }
 
+    // POST /empleados/{id}/actualizar
     public function update(Request $request, $id)
     {
-        $empleado = Empleados::findOrFail($id);
+        $request->validate([
+            'nombre'     => 'required',
+            'apellido_p' => 'required',
+            'apellido_m' => 'nullable',
+            'correo'     => 'nullable|email',
+            'puesto'     => 'nullable',
+            'turno'      => 'nullable',
+            'imagen'     => 'nullable|image|max:2048',
+        ], [
+            'nombre.required'     => 'El nombre es obligatorio.',
+            'apellido_p.required' => 'El apellido paterno es obligatorio.',
+            'correo.required'     => 'El correo electrónico es opcional.',
+            'correo.email'        => 'El correo electrónico debe ser una dirección válida.',
+            'turno.required'      => 'Favor de seleccionar un turno.',
+        ]);
 
-        $request->validate(
-            [
-                'nombre' => 'required',
-                'apellido_p' => 'required',
-                'apellido_m' => 'required',
-                'correo' => 'required|email|unique:Empleados,correo,' . $empleado->id,
-                'contrasena' => 'nullable|min:6',
-                'conf_contrasena' => 'nullable|same:contrasena',
-                'puesto' => 'required',
-                'area' => 'required',
-                'turno' => 'required',
-                'imagen' => 'nullable|image|max:2048'
-            ],
-            [
-                'conf_contrasena.same' => 'Las contraseñas no coinciden.',
-                'correo.unique' => 'Este correo ya está registrado.',
-            ]
-        );
+        $peticion = Http::withToken(session('api_token'));
 
-        $empleado->nombre = $request->nombre;
-        $empleado->apellido_p = $request->apellido_p;
-        $empleado->apellido_m = $request->apellido_m;
-        $empleado->correo = $request->correo;
-
-        if ($request->filled('contrasena')) {
-            $empleado->contrasena = Hash::make($request->contrasena);
+        if ($request->hasFile('imagen')) {
+            $response = $peticion
+                ->attach(
+                    'imagen',
+                    file_get_contents($request->file('imagen')->getRealPath()),
+                    $request->file('imagen')->getClientOriginalName()
+                )
+                ->put("{$this->apiUrl}/empleados/{$id}", [
+                    'nombre'     => $request->nombre,
+                    'apellido_p' => $request->apellido_p,
+                    'apellido_m' => $request->apellido_m,
+                    'correo'     => $request->correo,
+                    'puesto'     => $request->puesto,
+                    'turno'      => $request->turno,
+                ]);
+        } else {
+            $response = $peticion->put("{$this->apiUrl}/empleados/{$id}", [
+                'nombre'     => $request->nombre,
+                'apellido_p' => $request->apellido_p,
+                'apellido_m' => $request->apellido_m,
+                'correo'     => $request->correo,
+                'puesto'     => $request->puesto,
+                'turno'      => $request->turno,
+            ]);
         }
 
-        $empleado->puesto = $request->puesto;
-        $empleado->area = $request->area;
-        $empleado->turno = $request->turno;
+        $data = $response->json();
 
-        if ($request->has('imagen')) {
-            $imagen = $request->imagen;
-            $nuevo_nombre = 'empleado_' . $empleado->id . '.jpg';
-            $ruta = $imagen->storeAs('imagenes/empleados', $nuevo_nombre, 'public');
-            $empleado->imagen = '/storage/' . $ruta;
+        if (!$data['success']) {
+            return back()->withErrors(['error' => $data['mensaje']])->withInput();
         }
 
-        $empleado->save();
-
-        return redirect()->route('empleados.index')->with('success', 'Empleado actualizado exitosamente.');
+        return redirect()->route('empleados.index')
+            ->with('success', 'Empleado actualizado exitosamente.');
     }
 
-        public function destroy($id)
-        {
-            $empleado = Empleados::findOrFail($id);
-            $empleado->delete();
-    
-            return redirect()->route('empleados.index')->with('success', 'Empleado eliminado exitosamente.');
+    // DELETE /empleados/{id}
+    public function destroy($id)
+    {
+        $response = Http::withToken(session('api_token'))
+            ->delete("{$this->apiUrl}/empleados/{$id}");
+
+        $data = $response->json();
+
+        if (!$data['success']) {
+            return redirect()->route('empleados.index')
+                ->with('error', $data['mensaje']);
         }
+
+        return redirect()->route('empleados.index')
+            ->with('success', 'Empleado eliminado exitosamente.');
+    }
 }

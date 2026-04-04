@@ -56,13 +56,13 @@
                                             @foreach ($categorias as $categoria)
                                                 <li class="flex items-center">
                                                     <input type="checkbox" name="categorias[]"
-                                                        value="{{ $categoria->id_categoria }}"
-                                                        id="cat-{{ $categoria->id_categoria }}"
-                                                        {{ in_array($categoria->id_categoria, request('categorias', [])) ? 'checked' : '' }}
+                                                        value="{{ $categoria['id_categoria'] }}"
+                                                        id="cat-{{ $categoria['id_categoria'] }}"
+                                                        {{ in_array($categoria['id_categoria'], request('categorias', [])) ? 'checked' : '' }}
                                                         class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400">
-                                                    <label for="cat-{{ $categoria->id_categoria }}"
+                                                    <label for="cat-{{ $categoria['id_categoria'] }}"
                                                         class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                        {{ $categoria->nombre_categoria }}
+                                                        {{ $categoria['nombre_categoria'] }}
                                                     </label>
                                                 </li>
                                             @endforeach
@@ -111,10 +111,10 @@
                             </span>
                         @endif
                         @foreach (request('categorias', []) as $catId)
-                            @php $cat = $categorias->firstWhere('id_categoria', $catId) @endphp
+                            @php $cat = collect($categorias)->firstWhere('id_categoria', $catId) @endphp
                             @if ($cat)
                                 <span class="bg-orange-500 text-white text-xs rounded-full px-2 py-0.5">
-                                    {{ $cat->nombre_categoria }}
+                                    {{ $cat['nombre_categoria'] }}
                                 </span>
                             @endif
                         @endforeach
@@ -140,23 +140,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if (isset($herramientas) && $herramientas->count() > 0)
+                            @if (isset($herramientas) && count($herramientas) > 0)
                                 @foreach ($herramientas as $herramienta)
                                     <tr class="border-b dark:border-gray-700">
                                         <th scope="row"
                                             class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            {{ $herramienta->id_herramienta }}
+                                            {{ $herramienta['id_herramienta'] }}
                                         </th>
-                                        <td class="px-4 py-3">{{ $herramienta->nombre_herramienta }}</td>
-                                        <td class="px-4 py-3">{{ $herramienta->categoria->nombre_categoria }}</td>
-                                        <td class="px-4 py-3">{{ $herramienta->existencia }}</td>
-                                        <td class="px-4 py-3">{{ $herramienta->estado }}</td>
+                                        <td class="px-4 py-3">{{ $herramienta['nombre_herramienta'] }}</td>
+                                        <td class="px-4 py-3">{{ $herramienta['categoria']['nombre_categoria'] }}</td>
+                                        <td class="px-4 py-3">{{ $herramienta['existencia'] }}</td>
+                                        <td class="px-4 py-3">{{ $herramienta['estado'] }}</td>
                                         <td
-                                            class="px-4 py-3 font-semibold {{ $herramienta->disponible ? 'text-green-500' : 'text-red-500' }}">
-                                            {{ $herramienta->disponible ? 'Disponible' : 'No disponible' }}
+                                            class="px-4 py-3 font-semibold {{ $herramienta['disponible'] ? 'text-green-500' : 'text-red-500' }}">
+                                            {{ $herramienta['disponible'] ? 'Disponible' : 'No disponible' }}
                                         </td>
                                         <td class="px-4 py-3">
-                                            @php $primeraImagen = $herramienta->imagen; @endphp
+                                            @php $primeraImagen = $herramienta['imagen']; @endphp
                                             @if ($primeraImagen && !str_contains($primeraImagen, 'producto_default'))
                                                 <img src="{{ asset($primeraImagen) }}"
                                                     class="w-16 h-16 object-cover rounded" alt="Imagen herramienta">
@@ -165,8 +165,8 @@
                                             @endif
                                         </td>
                                         <td class="px-4 py-3 flex items-center justify-end">
-                                            <button id="herramienta-{{ $herramienta->id_herramienta }}-dropdown-button"
-                                                data-dropdown-toggle="herramienta-{{ $herramienta->id_herramienta }}-dropdown"
+                                            <button id="herramienta-{{ $herramienta['id_herramienta'] }}-dropdown-button"
+                                                data-dropdown-toggle="herramienta-{{ $herramienta['id_herramienta'] }}-dropdown"
                                                 class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-orange-300 duration-200 p-1.5 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
                                                 type="button">
                                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"
@@ -175,12 +175,12 @@
                                                         d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                                                 </svg>
                                             </button>
-                                            <div id="herramienta-{{ $herramienta->id_herramienta }}-dropdown"
+                                            <div id="herramienta-{{ $herramienta['id_herramienta'] }}-dropdown"
                                                 class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:divide-gray-600">
                                                 <ul class="py-1 text-sm"
-                                                    aria-labelledby="herramienta-{{ $herramienta->id_herramienta }}-dropdown-button">
+                                                    aria-labelledby="herramienta-{{ $herramienta['id_herramienta'] }}-dropdown-button">
                                                     <li>
-                                                        <a href="{{ route('herramientas.edit', $herramienta->id_herramienta) }}"
+                                                        <a href="{{ route('herramientas.edit', $herramienta['id_herramienta']) }}"
                                                             class="flex w-full items-center py-2 px-4 hover:bg-orange-300 text-gray-700 duration-300">
                                                             <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg"
                                                                 viewBox="0 0 20 20" fill="currentColor">
@@ -194,7 +194,7 @@
                                                     </li>
                                                     <li>
                                                         <form
-                                                            action="{{ route('herramientas.destroy', $herramienta->id_herramienta) }}"
+                                                            action="{{ route('herramientas.destroy', $herramienta['id_herramienta']) }}"
                                                             method="POST" class="w-full">
                                                             @csrf
                                                             @method('DELETE')

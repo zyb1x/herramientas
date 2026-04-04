@@ -26,9 +26,13 @@
                @error('id_empleado') border-red-500 ring-1 ring-red-500 @enderror">
                             <option value="" disabled selected>Selecciona un supervisor</option>
                             @foreach ($supervisores as $supervisor)
-                                <option value="{{ $supervisor->id }}"
+                                {{-- <option value="{{ $supervisor->id }}"
                                     {{ old('id_empleado') == $supervisor->id ? 'selected' : '' }}>
                                     {{ $supervisor->nombre }}
+                                </option> --}}
+                                <option value="{{ $supervisor['id'] }}"
+                                    {{ old('id_empleado') == $supervisor['id'] ? 'selected' : '' }}>
+                                    {{ $supervisor['nombre'] }}
                                 </option>
                             @endforeach
                         </select>
@@ -37,8 +41,45 @@
                         @enderror
                     </div>
 
-                    {{-- Nombre --}}
+                    {{-- campo id_material --}}
                     <div class="mb-5">
+                        <label for="id_material" class="block mb-2 text-sm font-medium text-white">
+                            Material
+                        </label>
+                        <select name="id_material" id="id_material"
+                            class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg
+               focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5
+               @error('id_material') border-red-500 ring-1 ring-red-500 @enderror">
+                            <option value="" disabled selected>Selecciona un material</option>
+                            @foreach ($materiales as $material)
+                                <option value="{{ $material['id_material'] }}"
+                                    {{ old('id_material') == $material['id_material'] ? 'selected' : '' }}>
+                                    {{ $material['nombre_material'] }} ({{ $material['existencia'] }} disponibles)
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('id_material')
+                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{--  cantidad_sobrante --}}
+                    <div class="mb-5">
+                        <label for="cantidad_sobrante" class="block mb-2 text-sm font-medium text-white">
+                            Cantidad sobrante
+                        </label>
+                        <input type="number" name="cantidad_sobrante" id="cantidad_sobrante"
+                            value="{{ old('cantidad_sobrante') }}" placeholder="Ej: 10" min="0"
+                            class="bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm rounded-lg
+               focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5
+               @error('cantidad_sobrante') border-red-500 ring-1 ring-red-500 @enderror">
+                        @error('cantidad_sobrante')
+                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Nombre --}}
+                    {{-- <div class="mb-5">
                         <label for="nombre" class="block mb-2 text-sm font-medium text-white">
                             Nombre del Ensamblado
                         </label>
@@ -50,10 +91,10 @@
                         @error('nombre')
                             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     {{-- Cantidad --}}
-                    <div class="mb-5">
+                    {{-- <div class="mb-5">
                         <label for="cantidad" class="block mb-2 text-sm font-medium text-white">
                             Cantidad
                         </label>
@@ -65,7 +106,7 @@
                         @error('cantidad')
                             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     {{-- Fecha de Registro --}}
                     {{-- <div class="mb-6">
