@@ -44,17 +44,14 @@
                                         <div class="flex items-center gap-3">
                                             <div
                                                 class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold shadow-inner">
-                                                {{-- #{{ $ensamblado->id_ensamblado }} --}}
                                                 #{{ $ensamblado['id_ensamblado'] }}
                                             </div>
                                             <div>
                                                 <p class="font-bold text-gray-900 text-base">
-                                                    {{-- {{ $ensamblado->nombre ?? '—' }} --}}
-                                                    {{ $ensamblado['material']['nombre_material'] ?? '—' }}
+                                                    {{ $ensamblado['nombre'] ?? '—' }}
                                                 </p>
-                                                <p class="text-sm text-orange-600 font-semibold mt-0.5">Cantidad:
-                                                    {{-- {{ $ensamblado->cantidad }} u. --}}
-                                                    {{ $ensamblado['cantidad_sobrante'] }} u.
+                                                <p class="text-sm text-orange-600 font-semibold mt-0.5">
+                                                    Cantidad: {{ $ensamblado['cantidad'] ?? '—' }} u.
                                                 </p>
                                             </div>
                                         </div>
@@ -64,7 +61,8 @@
                                     <td class="px-6 py-4">
                                         @if (!empty($ensamblado['empleado']))
                                             <p class="font-semibold text-gray-900">
-                                                {{ $ensamblado['empleado']['nombre'] ?? 'Sin asignar' }}</p>
+                                                {{ $ensamblado['empleado']['nombre'] ?? 'Sin asignar' }}
+                                            </p>
                                             <p class="text-xs text-gray-500">Supervisor</p>
                                         @else
                                             <span class="text-gray-400 italic">Sin asignar</span>
@@ -74,9 +72,11 @@
                                     {{-- Fecha --}}
                                     <td class="px-6 py-4 text-center">
                                         <p class="font-medium text-gray-700">
-                                            {{ \Carbon\Carbon::parse($ensamblado['fecha_registro'])->format('d/m/Y') }}</p>
+                                            {{ \Carbon\Carbon::parse($ensamblado['fecha_registro'])->format('d/m/Y') }}
+                                        </p>
                                         <p class="text-xs text-gray-500 mt-0.5">
-                                            {{ \Carbon\Carbon::parse($ensamblado['fecha_registro'])->format('h:i A') }}</p>
+                                            {{ \Carbon\Carbon::parse($ensamblado['fecha_registro'])->format('h:i A') }}
+                                        </p>
                                     </td>
 
                                 </tr>
@@ -99,12 +99,6 @@
                     </table>
                 </div>
             </div>
-
-            {{-- @if ($ensamblados->hasPages())
-                <div class="mt-6 flex justify-center">
-                    {{ $ensamblados->links() }}
-                </div>
-            @endif --}}
 
         </div>
     </section>

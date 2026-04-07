@@ -14,6 +14,7 @@
                 <form action="{{ route('ensamblados.ingresar.store') }}" method="POST">
                     @csrf
 
+                    {{-- Supervisor --}}
                     <div class="mb-5">
                         <label for="id_empleado" class="block mb-2 text-sm font-medium text-white">
                             Supervisor
@@ -24,10 +25,6 @@
                                    @error('id_empleado') border-red-500 ring-1 ring-red-500 @enderror">
                             <option value="" disabled selected>Selecciona un supervisor</option>
                             @foreach ($supervisores as $supervisor)
-                                {{-- <option value="{{ $supervisor->id }}"
-                                    {{ old('id_empleado') == $supervisor->id ? 'selected' : '' }}>
-                                    {{ $supervisor->nombre }}
-                                </option> --}}
                                 <option value="{{ $supervisor['id'] }}"
                                     {{ old('id_empleado') == $supervisor['id'] ? 'selected' : '' }}>
                                     {{ $supervisor['nombre'] }}
@@ -50,13 +47,9 @@
                                    @error('id_ensamblado') border-red-500 ring-1 ring-red-500 @enderror">
                             <option value="" disabled selected>Selecciona un ensamblado</option>
                             @foreach ($ensamblados as $ens)
-                                {{-- <option value="{{ $ens->id_ensamblado }}" data-cantidad="{{ $ens->cantidad }}"
-                                    {{ old('id_ensamblado') == $ens->id_ensamblado ? 'selected' : '' }}>
-                                    {{ $ens->nombre }}
-                                </option> --}}
-                                <option value="{{ $ens['id_ensamblado'] }}" data-cantidad="{{ $ens['cantidad_sobrante'] }}"
+                                <option value="{{ $ens['id_ensamblado'] }}" data-cantidad="{{ $ens['cantidad'] }}"
                                     {{ old('id_ensamblado') == $ens['id_ensamblado'] ? 'selected' : '' }}>
-                                    {{ $ens['material']['nombre_material'] ?? 'Ensamblado #' . $ens['id_ensamblado'] }}
+                                    {{ $ens['nombre'] ?? 'Ensamblado #' . $ens['id_ensamblado'] }}
                                 </option>
                             @endforeach
                         </select>
@@ -71,21 +64,17 @@
                         <span id="cantidad-actual" class="text-green-400 font-bold text-sm">—</span>
                     </div>
 
-                    {{-- Supervisor --}}
-
-
                     {{-- Cantidad a sumar --}}
                     <div class="mb-6">
                         <label for="cantidad" class="block mb-2 text-sm font-medium text-white">
                             Cantidad a ingresar
                         </label>
-                        <input type="number" name="cantidad_sobrante" id="cantidad_sobrante"
-                            value="{{ old('cantidad_sobrante') }}" placeholder="Ej: 10" min="1"
-                            oninput="actualizarPreview(this)"
+                        <input type="number" name="cantidad" id="cantidad" value="{{ old('cantidad') }}"
+                            placeholder="Ej: 10" min="1" oninput="actualizarPreview(this)"
                             class="bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm rounded-lg
                                    focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5
-                                   @error('cantidad_sobrante') border-red-500 ring-1 ring-red-500 @enderror">
-                        @error('cantidad_sobrante')
+                                   @error('cantidad') border-red-500 ring-1 ring-red-500 @enderror">
+                        @error('cantidad')
                             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                         @enderror
 
@@ -124,8 +113,7 @@
                 info.classList.add('hidden');
             }
 
-            // Recalcular preview si ya hay cantidad ingresada
-            const input = document.getElementById('cantidad_sobrante');
+            const input = document.getElementById('cantidad');
             if (input.value) actualizarPreview(input);
         }
 
