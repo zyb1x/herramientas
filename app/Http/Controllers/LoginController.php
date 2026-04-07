@@ -78,8 +78,8 @@ class LoginController extends Controller
         $request->validate(
             [
                 'nombre' => 'required',
-                'correo' => 'required|email|unique:Usuarios,correo',
-                'usuario' => 'required|unique:Usuarios,usuario,correo',
+                'correo' => 'required|email',
+                'usuario' => 'required',
                 'contrasena' => 'required|min:6',
                 'conf_contrasena' => 'required|same:contrasena',
                 'rol'   => 'required|in:Administrador,Almacenista,Supervisor',

@@ -102,7 +102,7 @@ class DevolucionController extends Controller
             'devoluciones'                       => 'required|array',
             'devoluciones.*.id_herramienta'      => 'required|integer',
             'devoluciones.*.cantidad'            => 'required|integer|min:1',
-            'devoluciones.*.estatus_herramienta' => 'required|in:Nuevo,Buen Estado,Dañado,Reparación',
+            'devoluciones.*.estatus_herramienta' => 'required|in:Nuevo,Buen Estado,Danado,Reparacion',
         ], [
             'id_prestamo.required' => 'Selecciona un préstamo.',
         ]);
@@ -116,9 +116,15 @@ class DevolucionController extends Controller
 
         $data = $response->json();
 
+        // ← Agrega esto para ver qué devuelve la API
+        if (!$data) {
+            return redirect()->route('devoluciones.index')
+                ->with('error', 'Error de conexión con la API. Status: ' . $response->status());
+        }
+
         if (!$data['success']) {
             return redirect()->route('devoluciones.index')
-                ->with('error', $data['mensaje']);
+                ->with('error', $data['mensaje'] . ' — ' . ($data['error'] ?? 'sin detalle'));
         }
 
         $registradas = count($request->devoluciones);

@@ -16,6 +16,11 @@ class EmpleadosController extends Controller
         $this->apiUrl = env('API_URL', 'http://127.0.0.1:8000/api');
     }
 
+    private function http()
+    {
+        return Http::withToken(session('api_token'))->timeout(60);
+    }
+
     // GET /empleados
     public function index()
     {
@@ -56,19 +61,15 @@ class EmpleadosController extends Controller
 
         if ($request->hasFile('imagen')) {
             $response = $peticion
-                ->attach(
-                    'imagen',
-                    file_get_contents($request->file('imagen')->getRealPath()),
-                    $request->file('imagen')->getClientOriginalName()
-                )
-                ->post("{$this->apiUrl}/empleados", [
-                    'nombre'     => $request->nombre,
-                    'apellido_p' => $request->apellido_p,
-                    'apellido_m' => $request->apellido_m,
-                    'correo'     => $request->correo,
-                    'puesto'     => $request->puesto,
-                    'turno'      => $request->turno,
-                ]);
+                ->asMultipart()
+                ->attach('imagen', file_get_contents($request->file('imagen')->getRealPath()), $request->file('imagen')->getClientOriginalName(), ['Content-Type' => $request->file('imagen')->getMimeType()])
+                ->attach('nombre',     (string) $request->nombre)
+                ->attach('apellido_p', (string) $request->apellido_p)
+                ->attach('apellido_m', (string) $request->apellido_m ?? '')
+                ->attach('correo',     (string) $request->correo ?? '')
+                ->attach('puesto',     (string) $request->puesto ?? '')
+                ->attach('turno',      (string) $request->turno ?? '')
+                ->post("{$this->apiUrl}/empleados");
         } else {
             $response = $peticion->post("{$this->apiUrl}/empleados", [
                 'nombre'     => $request->nombre,
@@ -129,19 +130,15 @@ class EmpleadosController extends Controller
 
         if ($request->hasFile('imagen')) {
             $response = $peticion
-                ->attach(
-                    'imagen',
-                    file_get_contents($request->file('imagen')->getRealPath()),
-                    $request->file('imagen')->getClientOriginalName()
-                )
-                ->put("{$this->apiUrl}/empleados/{$id}", [
-                    'nombre'     => $request->nombre,
-                    'apellido_p' => $request->apellido_p,
-                    'apellido_m' => $request->apellido_m,
-                    'correo'     => $request->correo,
-                    'puesto'     => $request->puesto,
-                    'turno'      => $request->turno,
-                ]);
+                ->asMultipart()
+                ->attach('imagen', file_get_contents($request->file('imagen')->getRealPath()), $request->file('imagen')->getClientOriginalName(), ['Content-Type' => $request->file('imagen')->getMimeType()])
+                ->attach('nombre',     (string) $request->nombre)
+                ->attach('apellido_p', (string) $request->apellido_p)
+                ->attach('apellido_m', (string) $request->apellido_m ?? '')
+                ->attach('correo',     (string) $request->correo ?? '')
+                ->attach('puesto',     (string) $request->puesto ?? '')
+                ->attach('turno',      (string) $request->turno ?? '')
+                ->put("{$this->apiUrl}/empleados/{$id}");
         } else {
             $response = $peticion->put("{$this->apiUrl}/empleados/{$id}", [
                 'nombre'     => $request->nombre,

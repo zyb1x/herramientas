@@ -162,8 +162,8 @@
                                         class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 w-full p-2">
                                         <option value="Nuevo">Nuevo</option>
                                         <option value="Buen Estado" selected>Buen Estado</option>
-                                        <option value="Dañado">Dañado</option>
-                                        <option value="Reparación">Reparación</option>
+                                        <option value="Danado">Dañado</option>
+                                        <option value="Reparacion">Reparación</option>
                                     </select>
                                 </div>
 

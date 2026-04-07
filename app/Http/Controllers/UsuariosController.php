@@ -16,6 +16,11 @@ class UsuariosController extends Controller
         $this->apiUrl = env('API_URL', 'http://127.0.0.1:8000/api');
     }
 
+    private function http()
+    {
+        return Http::withToken(session('api_token'))->timeout(60);
+    }
+
     // GET /usuarios
     public function index()
     {
@@ -82,20 +87,16 @@ class UsuariosController extends Controller
 
         if ($request->hasFile('imagen')) {
             $response = $peticion
-                ->attach(
-                    'imagen',
-                    file_get_contents($request->file('imagen')->getRealPath()),
-                    $request->file('imagen')->getClientOriginalName()
-                )
-                ->post("{$this->apiUrl}/usuarios", [
-                    'nombre'          => $request->nombre,
-                    'correo'          => $request->correo,
-                    'usuario'         => $request->usuario,
-                    'contrasena'      => $request->contrasena,
-                    'conf_contrasena' => $request->conf_contrasena,
-                    'rol'             => $request->rol,
-                    'turno'           => $request->turno,
-                ]);
+                ->asMultipart()
+                ->attach('imagen', file_get_contents($request->file('imagen')->getRealPath()), $request->file('imagen')->getClientOriginalName(), ['Content-Type' => $request->file('imagen')->getMimeType()])
+                ->attach('nombre',          (string) $request->nombre)
+                ->attach('correo',          (string) $request->correo)
+                ->attach('usuario',         (string) $request->usuario)
+                ->attach('contrasena',      (string) $request->contrasena)
+                ->attach('conf_contrasena', (string) $request->conf_contrasena)
+                ->attach('rol',             (string) $request->rol)
+                ->attach('turno',           (string) $request->turno)
+                ->post("{$this->apiUrl}/usuarios");
         } else {
             $response = $peticion->post("{$this->apiUrl}/usuarios", [
                 'nombre'          => $request->nombre,
@@ -165,20 +166,16 @@ class UsuariosController extends Controller
 
         if ($request->hasFile('imagen')) {
             $response = $peticion
-                ->attach(
-                    'imagen',
-                    file_get_contents($request->file('imagen')->getRealPath()),
-                    $request->file('imagen')->getClientOriginalName()
-                )
-                ->put("{$this->apiUrl}/usuarios/{$id}", [
-                    'nombre'          => $request->nombre,
-                    'correo'          => $request->correo,
-                    'usuario'         => $request->usuario,
-                    'contrasena'      => $request->contrasena,
-                    'conf_contrasena' => $request->conf_contrasena,
-                    'rol'             => $request->rol,
-                    'turno'           => $request->turno,
-                ]);
+                ->asMultipart()
+                ->attach('imagen', file_get_contents($request->file('imagen')->getRealPath()), $request->file('imagen')->getClientOriginalName(), ['Content-Type' => $request->file('imagen')->getMimeType()])
+                ->attach('nombre',          (string) $request->nombre)
+                ->attach('correo',          (string) $request->correo)
+                ->attach('usuario',         (string) $request->usuario)
+                ->attach('contrasena',      (string) $request->contrasena ?? '')
+                ->attach('conf_contrasena', (string) $request->conf_contrasena ?? '')
+                ->attach('rol',             (string) $request->rol)
+                ->attach('turno',           (string) $request->turno)
+                ->put("{$this->apiUrl}/usuarios/{$id}");
         } else {
             $response = $peticion->put("{$this->apiUrl}/usuarios/{$id}", [
                 'nombre'          => $request->nombre,
