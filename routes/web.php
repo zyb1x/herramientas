@@ -32,7 +32,7 @@ Route::get('/auth/google/callback', function () {
         $googleUser = Socialite::driver('google')->stateless()->user();
 
         // Todo pasa por la API — sin tocar BD directamente
-        $response = Http::post(env('API_URL') . '/auth/google', [
+        $response = Http::post(config('services.api.url') . '/auth/google', [
             'nombre'    => $googleUser->getName(),
             'correo'    => $googleUser->getEmail(),
             'usuario'   => $googleUser->getEmail(),
