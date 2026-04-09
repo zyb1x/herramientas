@@ -31,25 +31,13 @@ Route::get('/auth/google/callback', function () {
     try {
         $googleUser = Socialite::driver('google')->stateless()->user();
 
-        // Buscar o crear usuario directo en BD
-        $usuario = \App\Models\Usuarios::where('correo', $googleUser->getEmail())->first();
-
-        if (!$usuario) {
-            $usuario = \App\Models\Usuarios::create([
-                'nombre'     => $googleUser->getName(),
-                'correo'     => $googleUser->getEmail(),
-                'usuario'    => $googleUser->getEmail(),
-                'contrasena' => \Illuminate\Support\Facades\Hash::make($googleUser->getId()),
-                'rol'        => 'Almacenista',
-                'turno'      => 'Matutino',
-                'imagen'     => $googleUser->getAvatar(),
-            ]);
-        }
-
-        // Ahora hacer login via API
-        $response = Http::post(env('API_URL') . '/login', [
-            'correo'     => $googleUser->getEmail(),
-            'contrasena' => $googleUser->getId(),
+        // Todo pasa por la API — sin tocar BD directamente
+        $response = Http::post(env('API_URL') . '/auth/google', [
+            'nombre'    => $googleUser->getName(),
+            'correo'    => $googleUser->getEmail(),
+            'usuario'   => $googleUser->getEmail(),
+            'google_id' => $googleUser->getId(),
+            'imagen'    => $googleUser->getAvatar(),
         ]);
 
         if (!$response->successful() || !$response->json()['success']) {
@@ -83,80 +71,80 @@ Route::middleware('sesion.api')->group(function () {
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    // Préstamos
+    // Prestamos
     Route::get('/prestamos',      [PrestamoController::class, 'index'])->name('prestamos.index');
     Route::get('/prestamos/{id}', [PrestamoController::class, 'show'])->name('prestamos.show');
 
-    // Herramientas 
+    // Herramientas
     Route::prefix('herramientas')->group(function () {
-        Route::get('/',                           [HerramientasController::class, 'index'])->name('herramientas.index');
-        Route::get('/listado',                    [HerramientasController::class, 'listado'])->name('herramientas.listado');
-        Route::get('/buscar',                     [HerramientasController::class, 'buscar'])->name('herramientas.buscar');
-        Route::get('/registro',                   [HerramientasController::class, 'create'])->name('herramientas.create');
-        Route::post('/store',                     [HerramientasController::class, 'store'])->name('herramientas.store');
-        Route::get('/{id}/edit',                  [HerramientasController::class, 'edit'])->name('herramientas.edit');
-        Route::post('/{id}/actualizar',           [HerramientasController::class, 'update'])->name('herramientas.update');
-        Route::delete('/destroy/{id}',            [HerramientasController::class, 'destroy'])->name('herramientas.destroy');
+        Route::get('/',                 [HerramientasController::class, 'index'])->name('herramientas.index');
+        Route::get('/listado',          [HerramientasController::class, 'listado'])->name('herramientas.listado');
+        Route::get('/buscar',           [HerramientasController::class, 'buscar'])->name('herramientas.buscar');
+        Route::get('/registro',         [HerramientasController::class, 'create'])->name('herramientas.create');
+        Route::post('/store',           [HerramientasController::class, 'store'])->name('herramientas.store');
+        Route::get('/{id}/edit',        [HerramientasController::class, 'edit'])->name('herramientas.edit');
+        Route::post('/{id}/actualizar', [HerramientasController::class, 'update'])->name('herramientas.update');
+        Route::delete('/destroy/{id}',  [HerramientasController::class, 'destroy'])->name('herramientas.destroy');
     });
 
     // Materiales
     Route::prefix('materiales')->group(function () {
-        Route::get('/',                           [MaterialesController::class, 'index'])->name('materiales.index');
-        Route::get('/listado',                    [MaterialesController::class, 'listado'])->name('materiales.listado');
-        Route::get('/buscar',                     [MaterialesController::class, 'buscar'])->name('materiales.buscar');
-        Route::get('/registro',                   [MaterialesController::class, 'create'])->name('materiales.create');
-        Route::post('/store',                     [MaterialesController::class, 'store'])->name('materiales.store');
-        Route::get('/{id}/edit',                  [MaterialesController::class, 'edit'])->name('materiales.edit');
-        Route::post('/{id}/actualizar',           [MaterialesController::class, 'update'])->name('materiales.update');
-        Route::delete('/destroy/{id}',            [MaterialesController::class, 'destroy'])->name('materiales.destroy');
+        Route::get('/',                 [MaterialesController::class, 'index'])->name('materiales.index');
+        Route::get('/listado',          [MaterialesController::class, 'listado'])->name('materiales.listado');
+        Route::get('/buscar',           [MaterialesController::class, 'buscar'])->name('materiales.buscar');
+        Route::get('/registro',         [MaterialesController::class, 'create'])->name('materiales.create');
+        Route::post('/store',           [MaterialesController::class, 'store'])->name('materiales.store');
+        Route::get('/{id}/edit',        [MaterialesController::class, 'edit'])->name('materiales.edit');
+        Route::post('/{id}/actualizar', [MaterialesController::class, 'update'])->name('materiales.update');
+        Route::delete('/destroy/{id}',  [MaterialesController::class, 'destroy'])->name('materiales.destroy');
     });
 
-    // Empleados 
+    // Empleados
     Route::prefix('empleados')->group(function () {
-        Route::get('/',                           [EmpleadosController::class, 'index'])->name('empleados.index');
-        Route::get('/create',                     [EmpleadosController::class, 'create'])->name('empleados.create');
-        Route::post('/store',                     [EmpleadosController::class, 'store'])->name('empleados.store');
-        Route::get('/{id}/edit',                  [EmpleadosController::class, 'edit'])->name('empleados.edit');
-        Route::post('/{id}/actualizar',           [EmpleadosController::class, 'update'])->name('empleados.update');
-        Route::delete('/destroy/{id}',            [EmpleadosController::class, 'destroy'])->name('empleados.destroy');
+        Route::get('/',                 [EmpleadosController::class, 'index'])->name('empleados.index');
+        Route::get('/create',           [EmpleadosController::class, 'create'])->name('empleados.create');
+        Route::post('/store',           [EmpleadosController::class, 'store'])->name('empleados.store');
+        Route::get('/{id}/edit',        [EmpleadosController::class, 'edit'])->name('empleados.edit');
+        Route::post('/{id}/actualizar', [EmpleadosController::class, 'update'])->name('empleados.update');
+        Route::delete('/destroy/{id}',  [EmpleadosController::class, 'destroy'])->name('empleados.destroy');
     });
 
-    // Usuarios 
+    // Usuarios
     Route::prefix('usuarios')->group(function () {
-        Route::get('/',                           [UsuariosController::class, 'index'])->name('usuarios.index');
-        Route::get('/create',                     [UsuariosController::class, 'create'])->name('usuarios.create');
-        Route::post('/store',                     [UsuariosController::class, 'store'])->name('usuarios.store');
-        Route::get('/{id}',                       [UsuariosController::class, 'show'])->name('usuarios.show');
-        Route::get('/{id}/edit',                  [UsuariosController::class, 'edit'])->name('usuarios.edit');
-        Route::post('/{id}/actualizar',           [UsuariosController::class, 'update'])->name('usuarios.update');
-        Route::delete('/destroy/{id}',            [UsuariosController::class, 'destroy'])->name('usuarios.destroy');
+        Route::get('/',                 [UsuariosController::class, 'index'])->name('usuarios.index');
+        Route::get('/create',           [UsuariosController::class, 'create'])->name('usuarios.create');
+        Route::post('/store',           [UsuariosController::class, 'store'])->name('usuarios.store');
+        Route::get('/{id}',             [UsuariosController::class, 'show'])->name('usuarios.show');
+        Route::get('/{id}/edit',        [UsuariosController::class, 'edit'])->name('usuarios.edit');
+        Route::post('/{id}/actualizar', [UsuariosController::class, 'update'])->name('usuarios.update');
+        Route::delete('/destroy/{id}',  [UsuariosController::class, 'destroy'])->name('usuarios.destroy');
     });
 
-    // Carrito 
+    // Carrito
     Route::prefix('carrito')->name('carrito.')->group(function () {
-        Route::get('/',                           [CarritoController::class, 'index'])->name('index');
-        Route::post('/agregar/herramienta',       [CarritoController::class, 'agregarHerramienta'])->name('agregar.herramienta');
-        Route::post('/agregar/material',          [CarritoController::class, 'agregarMaterial'])->name('agregar.material');
-        Route::delete('/eliminar/{rowId}',        [CarritoController::class, 'eliminar'])->name('eliminar');
-        Route::delete('/vaciar',                  [CarritoController::class, 'vaciar'])->name('vaciar');
-        Route::post('/confirmar',                 [CarritoController::class, 'confirmar'])->name('confirmar');
+        Route::get('/',                     [CarritoController::class, 'index'])->name('index');
+        Route::post('/agregar/herramienta', [CarritoController::class, 'agregarHerramienta'])->name('agregar.herramienta');
+        Route::post('/agregar/material',    [CarritoController::class, 'agregarMaterial'])->name('agregar.material');
+        Route::delete('/eliminar/{rowId}',  [CarritoController::class, 'eliminar'])->name('eliminar');
+        Route::delete('/vaciar',            [CarritoController::class, 'vaciar'])->name('vaciar');
+        Route::post('/confirmar',           [CarritoController::class, 'confirmar'])->name('confirmar');
     });
 
-    // Devoluciones 
+    // Devoluciones
     Route::prefix('devoluciones')->name('devoluciones.')->group(function () {
-        Route::get('/',                           [DevolucionController::class, 'index'])->name('index');
-        Route::post('/buscar',                    [DevolucionController::class, 'buscarPrestamo'])->name('buscar');
-        Route::post('/store',                     [DevolucionController::class, 'store'])->name('store');
+        Route::get('/',        [DevolucionController::class, 'index'])->name('index');
+        Route::post('/buscar', [DevolucionController::class, 'buscarPrestamo'])->name('buscar');
+        Route::post('/store',  [DevolucionController::class, 'store'])->name('store');
     });
 
-    // Ensamblados 
+    // Ensamblados
     Route::prefix('ensamblados')->name('ensamblados.')->group(function () {
-        Route::get('/',                           [EnsambladoController::class, 'index'])->name('index');
-        Route::get('/crear',                      [EnsambladoController::class, 'create'])->name('create');
-        Route::post('/store',                     [EnsambladoController::class, 'store'])->name('store');
-        Route::get('/{id}/json',                  [EnsambladoController::class, 'show'])->name('show');
-        Route::get('/ingresar',                   [EnsambladoController::class, 'ingresar'])->name('ingresar');
-        Route::post('/ingresar',                  [EnsambladoController::class, 'ingresarStore'])->name('ingresar.store');
+        Route::get('/',          [EnsambladoController::class, 'index'])->name('index');
+        Route::get('/crear',     [EnsambladoController::class, 'create'])->name('create');
+        Route::post('/store',    [EnsambladoController::class, 'store'])->name('store');
+        Route::get('/{id}/json', [EnsambladoController::class, 'show'])->name('show');
+        Route::get('/ingresar',  [EnsambladoController::class, 'ingresar'])->name('ingresar');
+        Route::post('/ingresar', [EnsambladoController::class, 'ingresarStore'])->name('ingresar.store');
     });
 });
 
@@ -164,7 +152,6 @@ Route::middleware('sesion.api')->group(function () {
 Route::get('/', function () {
     return redirect()->route('login');
 });
-
 
 Route::get('/aviso-de-privacidad/pdf', function () {
     $pdf = Pdf::loadView('aviso_de_privacidad.pdf');
