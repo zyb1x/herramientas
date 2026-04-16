@@ -7,7 +7,7 @@
 
     <section class="bg-white dark:bg-White">
         <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16 bg-[#023047] rounded-lg shadow dark:bg-[#023047] mt-20 mb-20">
-            <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Editar Herramienta</h2>
+            <h2 class="mb-4 text-xl font-bold text-white">Editar Herramienta</h2>
             {{-- @if ($errors->any())
                 <div class="bg-red-500 text-white p-4 rounded-lg mb-4">
                     <ul class="list-disc list-inside">
@@ -24,11 +24,11 @@
 
                     <div class="sm:col-span-2">
                         <label for="nombre_herramienta"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre
+                            class="block mb-2 text-sm font-medium text-white">Nombre
                             de la herramienta</label>
                         <input type="text" name="nombre_herramienta" id="nombre_herramienta"
                             value="{{ $herramienta['nombre_herramienta'] }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('nombre_herramienta')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"    
                             @else
@@ -42,9 +42,9 @@
 
                     <div>
                         <label for="id_categoria"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Categoría</label>
+                            class="block mb-2 text-sm font-medium text-white">Categoría</label>
                         <select name="id_categoria" id="id_categoria"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('id_categoria')
                                  style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else
@@ -68,9 +68,9 @@
 
                     <div>
                         <label for="existencia"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Existencia</label>
+                            class="block mb-2 text-sm font-medium text-white">Existencia</label>
                         <input type="number" name="existencia" id="existencia" value="{{ $herramienta['existencia'] }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('existencia')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else

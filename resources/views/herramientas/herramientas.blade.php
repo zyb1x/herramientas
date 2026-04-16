@@ -134,116 +134,135 @@
     </div>
 
     <script>
-        function asignarBotonesSolicitar() {
-            document.querySelectorAll('.btn-solicitar').forEach(function(btn) {
-                btn.removeEventListener('click', abrirModal);
-                btn.addEventListener('click', abrirModal);
-            });
+    const modal = document.getElementById('solicitarModal');
+
+    function abrirModalEl() {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function cerrarModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function abrirModal() {
+        document.getElementById('modal-herramienta-id').value = this.dataset.id;
+        document.getElementById('modal-nombre').value = this.dataset.nombre;
+        document.getElementById('modal-categoria').value = this.dataset.categoria;
+        document.getElementById('modal-existencia').value = this.dataset.existencia;
+        document.getElementById('modal-imagen').src = this.dataset.imagen;
+        document.getElementById('modal-imagen').alt = this.dataset.nombre;
+        document.getElementById('modal-cantidad').value = '';
+        document.getElementById('error-cantidad').classList.add('hidden');
+        abrirModalEl();
+    }
+
+    function asignarBotonesSolicitar() {
+        document.querySelectorAll('.btn-solicitar').forEach(function(btn) {
+            btn.removeEventListener('click', abrirModal);
+            btn.addEventListener('click', abrirModal);
+        });
+    }
+
+    asignarBotonesSolicitar();
+
+    document.querySelectorAll('[data-modal-toggle="solicitarModal"]').forEach(function(btn) {
+        btn.addEventListener('click', cerrarModal);
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) cerrarModal();
+    });
+
+    const listaOriginal = document.getElementById('lista-herramientas').innerHTML;
+
+    document.getElementById('buscador').addEventListener('input', function() {
+        const q = this.value.trim();
+
+        if (q === '') {
+            document.getElementById('lista-herramientas').innerHTML = listaOriginal;
+            asignarBotonesSolicitar();
+            return;
         }
 
-        function abrirModal() {
-            document.getElementById('modal-herramienta-id').value = this.dataset.id;
-            document.getElementById('modal-nombre').value = this.dataset.nombre;
-            document.getElementById('modal-categoria').value = this.dataset.categoria;
-            document.getElementById('modal-existencia').value = this.dataset.existencia;
-            document.getElementById('modal-imagen').src = this.dataset.imagen;
-            document.getElementById('modal-imagen').alt = this.dataset.nombre;
-            document.getElementById('modal-cantidad').value = '';
-            document.getElementById('error-cantidad').classList.add('hidden');
-        }
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
+            fetch(`/herramientas/buscar?q=${encodeURIComponent(q)}`)
+                .then(res => res.json())
+                .then(herramientas => {
+                    const lista = document.getElementById('lista-herramientas');
 
-        asignarBotonesSolicitar();
+                    if (herramientas.length === 0) {
+                        lista.innerHTML = `
+                            <p class="text-gray-400 col-span-4 text-center py-8">
+                                No se encontraron herramientas.
+                            </p>`;
+                        return;
+                    }
 
-        const listaOriginal = document.getElementById('lista-herramientas').innerHTML;
-
-        document.getElementById('buscador').addEventListener('input', function() {
-            const q = this.value.trim();
-
-            if (q === '') {
-                document.getElementById('lista-herramientas').innerHTML = listaOriginal;
-                asignarBotonesSolicitar();
-                return;
-            }
-
-            clearTimeout(this._timer);
-            this._timer = setTimeout(() => {
-                fetch(`/herramientas/buscar?q=${encodeURIComponent(q)}`)
-                    .then(res => res.json())
-                    .then(herramientas => {
-                        const lista = document.getElementById('lista-herramientas');
-
-                        if (herramientas.length === 0) {
-                            lista.innerHTML = `
-                                <p class="text-gray-400 col-span-4 text-center py-8">
-                                    No se encontraron herramientas.
-                                </p>`;
-                            return;
-                        }
-
-                        lista.innerHTML = herramientas.map(h => `
-                            <div class="bg-[#023047] rounded-xl border border-gray-500 overflow-hidden hover:border-orange-600 transition-colors flex flex-col shadow-lg duration-400">
-                                <div class="bg-white flex items-center justify-center h-56 p-4">
-                                    <img class="h-44 object-contain" src="${h.imagen}" alt="${h.nombre_herramienta}">
-                                </div>
-                                <div class="p-4 flex flex-col flex-1">
-                                    <p class="text-orange-400 text-xs font-bold tracking-widest mb-1">
-                                        ${h.categoria ? h.categoria.nombre_categoria : ''}
-                                    </p>
-                                    <h3 class="text-white text-sm font-semibold leading-snug mb-2">
-                                        ${h.nombre_herramienta}
-                                    </h3>
-                                    <div class="flex items-center gap-1 mb-3">
-                                        <span class="text-gray-400 text-xs">Existencia:</span>
-                                        <span class="text-white text-xs font-semibold">${h.existencia}</span>
-                                    </div>
-                                    <button
-                                        data-modal-target="solicitarModal"
-                                        data-modal-toggle="solicitarModal"
-                                        data-id="${h.id_herramienta}"
-                                        data-nombre="${h.nombre_herramienta}"
-                                        data-categoria="${h.categoria ? h.categoria.nombre_categoria : ''}"
-                                        data-existencia="${h.existencia}"
-                                        data-imagen="${h.imagen}"
-                                        class="btn-solicitar w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                        Solicitar
-                                    </button>
-                                </div>
+                    lista.innerHTML = herramientas.map(h => `
+                        <div class="bg-[#023047] rounded-xl border border-gray-500 overflow-hidden hover:border-orange-600 transition-colors flex flex-col shadow-lg duration-400">
+                            <div class="bg-white flex items-center justify-center h-56 p-4">
+                                <img class="h-44 object-contain" src="${h.imagen}" alt="${h.nombre_herramienta}">
                             </div>
-                        `).join('');
+                            <div class="p-4 flex flex-col flex-1">
+                                <p class="text-orange-400 text-xs font-bold tracking-widest mb-1">
+                                    ${h.categoria ? h.categoria.nombre_categoria : ''}
+                                </p>
+                                <h3 class="text-white text-sm font-semibold leading-snug mb-2">
+                                    ${h.nombre_herramienta}
+                                </h3>
+                                <div class="flex items-center gap-1 mb-3">
+                                    <span class="text-gray-400 text-xs">Existencia:</span>
+                                    <span class="text-white text-xs font-semibold">${h.existencia}</span>
+                                </div>
+                                <button
+                                    data-id="${h.id_herramienta}"
+                                    data-nombre="${h.nombre_herramienta}"
+                                    data-categoria="${h.categoria ? h.categoria.nombre_categoria : ''}"
+                                    data-existencia="${h.existencia}"
+                                    data-imagen="${h.imagen}"
+                                    class="btn-solicitar w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    Solicitar
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
 
-                        asignarBotonesSolicitar();
-                    });
-            }, 300);
-        });
+                    asignarBotonesSolicitar();
+                });
+        }, 300);
+    });
 
-        document.getElementById('modal-cantidad').addEventListener('input', function() {
-            document.getElementById('error-cantidad').classList.add('hidden');
-        });
+    document.getElementById('modal-cantidad').addEventListener('input', function() {
+        document.getElementById('error-cantidad').classList.add('hidden');
+    });
 
-        document.querySelector('#solicitarModal form').addEventListener('submit', function(e) {
-            const existencia = parseInt(document.getElementById('modal-existencia').value);
-            const cantidad = parseInt(document.getElementById('modal-cantidad').value);
-            const errorEl = document.getElementById('error-cantidad');
+    document.querySelector('#solicitarModal form').addEventListener('submit', function(e) {
+        const existencia = parseInt(document.getElementById('modal-existencia').value);
+        const cantidad = parseInt(document.getElementById('modal-cantidad').value);
+        const errorEl = document.getElementById('error-cantidad');
 
-            if (!cantidad || cantidad < 1) {
-                e.preventDefault();
-                errorEl.textContent = 'La cantidad debe ser mayor a 0.';
-                errorEl.classList.remove('hidden');
-                return;
-            }
+        if (!cantidad || cantidad < 1) {
+            e.preventDefault();
+            errorEl.textContent = 'La cantidad debe ser mayor a 0.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
 
-            if (cantidad > existencia) {
-                e.preventDefault();
-                errorEl.textContent = `La cantidad no puede exceder la existencia disponible (${existencia}).`;
-                errorEl.classList.remove('hidden');
-                return;
-            }
+        if (cantidad > existencia) {
+            e.preventDefault();
+            errorEl.textContent = `La cantidad no puede exceder la existencia disponible (${existencia}).`;
+            errorEl.classList.remove('hidden');
+            return;
+        }
 
-            errorEl.classList.add('hidden');
-        });
-    </script>
+        errorEl.classList.add('hidden');
+    });
+</script>
 @endsection

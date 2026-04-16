@@ -19,7 +19,6 @@
                                    dark:focus:border-primary-500 dark:focus:ring-primary-500">
                             <option value="">Todos los estatus</option>
                             <option value="Activo">Activo</option>
-                            <option value="Devuelto Parcial">Devuelto Parcial</option>
                             <option value="Cerrado">Cerrado</option>
                         </select>
                     </div>

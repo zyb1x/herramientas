@@ -5,7 +5,7 @@
 @section('contenido')
     <section class="bg-gray-50 p-3 sm:p-5 antialiased mt-5">
         <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
-            <div class="bg-[#023047] relative shadow-md sm:rounded-lg overflow-hidden">
+            <div class="bg-[#023047] relative shadow-md sm:rounded-lg overflow-visible">
 
                 <form method="GET" action="{{ route('herramientas.listado') }}">
                     <div
@@ -96,7 +96,7 @@
                                         <path clip-rule="evenodd" fill-rule="evenodd"
                                             d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                                     </svg>
-                                    Registrar Herramienta
+                                    <a href="/herramientas/registro"> Registrar Herramienta </a>
                                 </button>
                             @endif
                         </div>
@@ -127,9 +127,9 @@
                     </div>
                 @endif
 
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto overflow-y-auto" style="max-height:750px;">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <thead class="text-xs uppercase bg-gray-700 text-gray-400 sticky top-0 z-10">
                             <tr>
                                 <th scope="col" class="px-4 py-4">ID</th>
                                 <th scope="col" class="px-4 py-3">Nombre</th>
@@ -144,9 +144,9 @@
                         <tbody>
                             @if (isset($herramientas) && count($herramientas) > 0)
                                 @foreach ($herramientas as $herramienta)
-                                    <tr class="border-b dark:border-gray-700">
+                                    <tr class="border-b dark:border-gray-700 font-bold">
                                         <th scope="row"
-                                            class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            class="px-4 py-3 font-medium whitespace-nowrap text-orange-500">
                                             {{ $herramienta['id_herramienta'] }}
                                         </th>
                                         <td class="px-4 py-3">{{ $herramienta['nombre_herramienta'] }}</td>

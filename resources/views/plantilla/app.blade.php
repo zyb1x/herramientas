@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Herramientas - @yield('titulo')</title>
-    @vite('resources/css/app.css', 'resources/js/app.js')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="flex flex-col min-h-screen">
@@ -19,7 +19,7 @@
     @endphp
 
     <header class="antialiased">
-        <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-[#023047]">
+        <nav class="border-gray-200 px-4 lg:px-6 py-2.5 bg-[#023047]">
             <div class="flex flex-wrap justify-between items-center">
 
                 {{-- Lado izquierdo: toggle sidebar + logo + buscador este es la hamburguesita del carlitos junior --}}
@@ -44,7 +44,7 @@
 
                     <a href="{{ route('inicio') }}" class="flex mr-4">
                         <span
-                            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white md:hover:text-orange-500 duration-200">Electronic's
+                            class="self-center text-2xl font-semibold whitespace-nowrap text-white md:hover:text-orange-500 duration-200">Electronic's
                             component</span>
                     </a>
 
@@ -132,7 +132,7 @@
                                             <li>
                                                 <a href="{{ route('ensamblados.create') }}"
                                                     class="block w-full p-2 hover:bg-orange-300 hover:text-heading rounded transition-colors duration-300">
-                                                    Registrar ensamble nuevo
+                                                    Nuevo Ensamble
                                                 </a>
                                             </li>
                                         </ul>
@@ -300,7 +300,14 @@
                                                 Registrar Usuario
                                             </a>
                                         </span>
+                                          
                                     @endif
+                                    <span
+                                            class="inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full bg-blue-500 text-white hover:bg-white hover:text-orange-500 duration-150">
+                                            <a href="{{ route('perfil') }}" >
+                                            Mi perfil
+                                            </a>
+                                        </span>  
                                     {{-- <span
                                         class="inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full bg-blue-500 text-white hover:bg-white hover:text-orange-500 duration-150">
                                         <a href="/registro">
@@ -350,15 +357,15 @@
         @yield('contenido')
     </main>
 
-    <footer class="p-4 bg-white md:p-8 lg:p-10 dark:bg-[#023047]">
+    <footer class="p-4 md:p-8 lg:p-10 bg-[#023047]">
         <div class="mx-auto max-w-screen-xl text-center">
             <a href="#"
-                class="flex justify-center items-center text-2xl font-semibold text-gray-900 dark:text-white">
+                class="flex justify-center items-center text-2xl font-semibold text-white">
                 <img src="{{ asset('storage/img/logo_herramientas.png') }}" alt="logo" class="h-15 w-auto mr-2">
                 Herramientas
             </a>
             <p class="my-6 text-gray-500 dark:text-gray-400"></p>
-            <ul class="flex flex-wrap justify-center items-center mb-6 text-gray-900 dark:text-white">
+            <ul class="flex flex-wrap justify-center items-center mb-6 text-white">
                 {{-- <li>
                     <a href="#" class="mr-4 hover:underline md:mr-6 ">About</a>
                 </li>

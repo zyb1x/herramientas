@@ -6,7 +6,7 @@
 
     <section class="bg-white dark:bg-White">
         <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16 bg-[#023047] rounded-lg shadow dark:bg-[#023047] mt-8 mb-10">
-            <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Regístrate</h2>
+            <h2 class="mb-4 text-xl font-bold text-white">Regístrate</h2>
             {{-- @if ($errors->any())
                 <div class="bg-red-500 text-white p-4 rounded-lg mb-4">
                     <ul class="list-disc list-inside">
@@ -21,12 +21,12 @@
                 <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
 
                     <div class="sm:col-span-2">
-                        <label for="nombre" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre
+                        <label for="nombre" class="block mb-2 text-sm font-medium text-white">Nombre
                             Completo</label>
                         <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('nombre')
-                                style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"    {{-- ← borde rojo si hay error --}}
+                                style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"    
                             @else
                                 border-gray-300 dark:border-gray-600  {{-- ← borde normal si no hay error --}}
                             @enderror
@@ -37,10 +37,10 @@
                     </div>
 
                     <div>
-                        <label for="correo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Correo
+                        <label for="correo" class="block mb-2 text-sm font-medium text-white">Correo
                             Electrónico</label>
                         <input type="text" name="correo" id="correo" value="{{ old('correo') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('correo')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else
@@ -53,10 +53,10 @@
                     </div>
 
                     <div>
-                        <label for="usuario" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Usuario
+                        <label for="usuario" class="block mb-2 text-sm font-medium text-white">Usuario
                         </label>
                         <input type="text" name="usuario" id="usuario" value="{{ old('usuario') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('usuario')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else
@@ -70,10 +70,10 @@
 
                     <div>
                         <label for="contrasena"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contraseña (Mínimo 6
+                            class="block mb-2 text-sm font-medium text-white">Contraseña (Mínimo 6
                             caracteres)</label>
                         <input type="password" name="contrasena" id="contrasena"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('contrasena')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else
@@ -87,10 +87,10 @@
 
                     <div>
                         <label for="conf_contrasena"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirmar
+                            class="block mb-2 text-sm font-medium text-white">Confirmar
                             Contraseña</label>
                         <input type="password" name="conf_contrasena" id="conf_contrasena"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('conf_contrasena')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else
@@ -104,9 +104,9 @@
 
                     <div>
                         <label for="rol"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rol</label>
+                            class="block mb-2 text-sm font-medium text-white">Rol</label>
                         <select name="rol" id="rol"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('rol')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else
@@ -124,9 +124,9 @@
 
                     <div>
                         <label for="turno"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Turno</label>
+                            class="block mb-2 text-sm font-medium text-white">Turno</label>
                         <select name="turno" id="turno"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('turno')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else
@@ -146,7 +146,7 @@
 
                     <div class="sm:col-span-2 flex items-center justify-center w-full">
                         <label for="dropzone-file"
-                            class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:bg-gray-700 dark:hover:bg-gray-800"
+                            class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-gray-600 bg-gray-700 hover:bg-gray-100 focus:ring-orange-500"
                             @error('imagen') 
             style="border-color: #ef4444; box-shadow: 0 0 0 1px #ef4444;" 
         @else 

@@ -125,113 +125,131 @@
     </div>
 
     <script>
-        //Funciones del modal
-        function asignarBotonesMaterial() {
-            document.querySelectorAll('.btn-solicitar-material').forEach(function(btn) {
-                btn.removeEventListener('click', abrirModalMaterial);
-                btn.addEventListener('click', abrirModalMaterial);
-            });
+    const modalMaterial = document.getElementById('solicitarMaterialModal');
+
+    function abrirModalMaterialEl() {
+        modalMaterial.classList.remove('hidden');
+        modalMaterial.classList.add('flex');
+    }
+
+    function cerrarModalMaterial() {
+        modalMaterial.classList.add('hidden');
+        modalMaterial.classList.remove('flex');
+    }
+
+    function abrirModalMaterial() {
+        document.getElementById('modal-material-id').value = this.dataset.id;
+        document.getElementById('modal-material-nombre').value = this.dataset.nombre;
+        document.getElementById('modal-material-existencia').value = this.dataset.existencia;
+        document.getElementById('modal-material-estatus').value = this.dataset.estatus;
+        document.getElementById('modal-material-cantidad').value = '';
+        document.getElementById('error-material-cantidad').classList.add('hidden');
+        abrirModalMaterialEl();
+    }
+
+    function asignarBotonesMaterial() {
+        document.querySelectorAll('.btn-solicitar-material').forEach(function(btn) {
+            btn.removeEventListener('click', abrirModalMaterial);
+            btn.addEventListener('click', abrirModalMaterial);
+        });
+    }
+
+    asignarBotonesMaterial();
+
+    document.querySelectorAll('[data-modal-toggle="solicitarMaterialModal"]').forEach(function(btn) {
+        btn.addEventListener('click', cerrarModalMaterial);
+    });
+
+    modalMaterial.addEventListener('click', function(e) {
+        if (e.target === modalMaterial) cerrarModalMaterial();
+    });
+
+    // Búsqueda en tiempo real
+    const listaOriginalMaterial = document.getElementById('lista-materiales').innerHTML;
+
+    document.getElementById('buscador-material').addEventListener('input', function() {
+        const q = this.value.trim();
+
+        if (q === '') {
+            document.getElementById('lista-materiales').innerHTML = listaOriginalMaterial;
+            asignarBotonesMaterial();
+            return;
         }
 
-        function abrirModalMaterial() {
-            document.getElementById('modal-material-id').value = this.dataset.id;
-            document.getElementById('modal-material-nombre').value = this.dataset.nombre;
-            document.getElementById('modal-material-existencia').value = this.dataset.existencia;
-            document.getElementById('modal-material-estatus').value = this.dataset.estatus;
-            document.getElementById('modal-material-cantidad').value = '';
-            document.getElementById('error-material-cantidad').classList.add('hidden');
-        }
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
+            fetch(`/materiales/buscar?q=${encodeURIComponent(q)}`)
+                .then(res => res.json())
+                .then(materiales => {
+                    const lista = document.getElementById('lista-materiales');
 
-        asignarBotonesMaterial();
+                    if (materiales.length === 0) {
+                        lista.innerHTML = `
+                            <p class="text-gray-400 col-span-4 text-center py-8">
+                                No se encontraron materiales.
+                            </p>`;
+                        return;
+                    }
 
-        // busqueda en tiempo real
-        const listaOriginalMaterial = document.getElementById('lista-materiales').innerHTML;
-
-        document.getElementById('buscador-material').addEventListener('input', function() {
-            const q = this.value.trim();
-
-            if (q === '') {
-                document.getElementById('lista-materiales').innerHTML = listaOriginalMaterial;
-                asignarBotonesMaterial();
-                return;
-            }
-
-            clearTimeout(this._timer);
-            this._timer = setTimeout(() => {
-                fetch(`/materiales/buscar?q=${encodeURIComponent(q)}`)
-                    .then(res => res.json())
-                    .then(materiales => {
-                        const lista = document.getElementById('lista-materiales');
-
-                        if (materiales.length === 0) {
-                            lista.innerHTML = `
-                                <p class="text-gray-400 col-span-4 text-center py-8">
-                                    No se encontraron materiales.
-                                </p>`;
-                            return;
-                        }
-
-                        lista.innerHTML = materiales.map(m => `
-                            <div class="bg-[#023047] rounded-xl border border-gray-500 overflow-hidden hover:border-orange-600 transition-colors flex flex-col shadow-lg duration-400">
-                                <div class="p-4 flex flex-col flex-1">
-                                    <p class="${m.estatus === 'Disponible' ? 'text-green-500' : 'text-red-500'} text-xs font-bold tracking-widest mb-1">
-                                        ${m.estatus}
-                                    </p>
-                                    <h3 class="text-white text-sm font-semibold leading-snug mb-2">
-                                        ${m.nombre_material}
-                                    </h3>
-                                    <div class="flex items-center gap-1 mb-3">
-                                        <span class="text-gray-400 text-xs">Existencia:</span>
-                                        <span class="text-white text-xs font-semibold">${m.existencia}</span>
-                                    </div>
-                                    <button
-                                        data-modal-target="solicitarMaterialModal"
-                                        data-modal-toggle="solicitarMaterialModal"
-                                        data-id="${m.id_material}"
-                                        data-nombre="${m.nombre_material}"
-                                        data-existencia="${m.existencia}"
-                                        data-estatus="${m.estatus}"
-                                        class="btn-solicitar-material w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                        Solicitar
-                                    </button>
+                    lista.innerHTML = materiales.map(m => `
+                        <div class="bg-[#023047] rounded-xl border border-gray-500 overflow-hidden hover:border-orange-600 transition-colors flex flex-col shadow-lg duration-400">
+                            <div class="p-4 flex flex-col flex-1">
+                                <p class="${m.estatus === 'Disponible' ? 'text-green-500' : 'text-red-500'} text-xs font-bold tracking-widest mb-1">
+                                    ${m.estatus}
+                                </p>
+                                <h3 class="text-white text-sm font-semibold leading-snug mb-2">
+                                    ${m.nombre_material}
+                                </h3>
+                                <div class="flex items-center gap-1 mb-3">
+                                    <span class="text-gray-400 text-xs">Existencia:</span>
+                                    <span class="text-white text-xs font-semibold">${m.existencia}</span>
                                 </div>
+                                <button
+                                    data-id="${m.id_material}"
+                                    data-nombre="${m.nombre_material}"
+                                    data-existencia="${m.existencia}"
+                                    data-estatus="${m.estatus}"
+                                    class="btn-solicitar-material w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    Solicitar
+                                </button>
                             </div>
-                        `).join('');
+                        </div>
+                    `).join('');
 
-                        asignarBotonesMaterial();
-                    });
-            }, 300);
-        });
+                    asignarBotonesMaterial();
+                });
+        }, 300);
+    });
 
-        //  Validación del modal
-        document.getElementById('modal-material-cantidad').addEventListener('input', function() {
-            document.getElementById('error-material-cantidad').classList.add('hidden');
-        });
+    // Validación del modal
+    document.getElementById('modal-material-cantidad').addEventListener('input', function() {
+        document.getElementById('error-material-cantidad').classList.add('hidden');
+    });
 
-        document.querySelector('#solicitarMaterialModal form').addEventListener('submit', function(e) {
-            const existencia = parseInt(document.getElementById('modal-material-existencia').value);
-            const cantidad = parseInt(document.getElementById('modal-material-cantidad').value);
-            const errorEl = document.getElementById('error-material-cantidad');
+    document.querySelector('#solicitarMaterialModal form').addEventListener('submit', function(e) {
+        const existencia = parseInt(document.getElementById('modal-material-existencia').value);
+        const cantidad = parseInt(document.getElementById('modal-material-cantidad').value);
+        const errorEl = document.getElementById('error-material-cantidad');
 
-            if (!cantidad || cantidad < 1) {
-                e.preventDefault();
-                errorEl.textContent = 'La cantidad debe ser mayor a 0.';
-                errorEl.classList.remove('hidden');
-                return;
-            }
+        if (!cantidad || cantidad < 1) {
+            e.preventDefault();
+            errorEl.textContent = 'La cantidad debe ser mayor a 0.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
 
-            if (cantidad > existencia) {
-                e.preventDefault();
-                errorEl.textContent = `La cantidad no puede exceder la existencia disponible (${existencia}).`;
-                errorEl.classList.remove('hidden');
-                return;
-            }
+        if (cantidad > existencia) {
+            e.preventDefault();
+            errorEl.textContent = `La cantidad no puede exceder la existencia disponible (${existencia}).`;
+            errorEl.classList.remove('hidden');
+            return;
+        }
 
-            errorEl.classList.add('hidden');
-        });
-    </script>
+        errorEl.classList.add('hidden');
+    });
+</script>
 @endsection

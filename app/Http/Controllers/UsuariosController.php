@@ -214,4 +214,83 @@ class UsuariosController extends Controller
         return redirect()->route('usuarios.index')
             ->with('success', 'Usuario eliminado exitosamente.');
     }
+    
+    public function perfil()
+{
+    return view('usuarios.perfil');
+}
+ 
+// POST /perfil/actualizar
+   public function actualizarPerfil(Request $request)
+{
+    $id = session('usuario')['id'];
+    $rol = session('usuario')['rol'];
+
+    $request->validate([
+        'nombre'          => 'required',
+        'correo'          => 'required|email',
+        'usuario'         => 'required',
+        'contrasena'      => 'nullable|min:6',
+        'conf_contrasena' => 'nullable|same:contrasena',
+        'turno'           => 'required|in:Matutino,Vespertino,Nocturno',
+        'imagen'          => 'nullable|image|max:2048|mimes:jpeg,png,jpg',
+    ]);
+
+    $multipart = [
+        ['name' => 'nombre',          'contents' => $request->input('nombre', '')],
+        ['name' => 'correo',          'contents' => $request->input('correo', '')],
+        ['name' => 'usuario',         'contents' => $request->input('usuario', '')],
+        ['name' => 'contrasena',      'contents' => $request->input('contrasena', '')],
+        ['name' => 'conf_contrasena', 'contents' => $request->input('conf_contrasena', '')],
+        ['name' => 'rol',             'contents' => $rol],
+        ['name' => 'turno',           'contents' => $request->input('turno', '')],
+    ];
+
+    if ($request->hasFile('imagen')) {
+        $archivo = $request->file('imagen');
+        $multipart[] = [
+            'name'     => 'imagen',
+            'contents' => fopen($archivo->getRealPath(), 'r'),
+            'filename' => $archivo->getClientOriginalName(),
+            'headers'  => ['Content-Type' => $archivo->getMimeType()],
+        ];
+    }
+
+    try {
+        $client = new \GuzzleHttp\Client();
+        $guzzleResponse = $client->post("{$this->apiUrl}/usuarios/{$id}/actualizar", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session('api_token'),
+                'Accept'        => 'application/json',
+            ],
+            'multipart' => $multipart,
+        ]);
+
+        $data = json_decode($guzzleResponse->getBody()->getContents(), true);
+
+    } catch (\GuzzleHttp\Exception\ClientException $e) {
+        $body = json_decode($e->getResponse()->getBody()->getContents(), true);
+        return back()->withErrors(['error' => $body['mensaje'] ?? 'Error de validación en la API.'])->withInput();
+    } catch (\Exception $e) {
+        return back()->withErrors(['error' => $e->getMessage()])->withInput();
+    }
+
+    if (!($data['success'] ?? false)) {
+        return back()->withErrors(['error' => $data['mensaje'] ?? 'Error al actualizar.'])->withInput();
+    }
+
+    $usuarioActualizado = $data['data'];
+
+    session(['usuario' => [
+        'id'      => $usuarioActualizado['id'],
+        'nombre'  => $usuarioActualizado['nombre'],
+        'correo'  => $usuarioActualizado['correo'],
+        'usuario' => $usuarioActualizado['usuario'],
+        'rol'     => $usuarioActualizado['rol'],
+        'turno'   => $usuarioActualizado['turno'],
+        'imagen'  => $usuarioActualizado['imagen'] . '?v=' . time(),
+    ]]);
+
+    return redirect('/perfil')->with('success', '¡Perfil actualizado correctamente!');
+}
 }

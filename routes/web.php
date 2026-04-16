@@ -74,6 +74,10 @@ Route::middleware('sesion.api')->group(function () {
     // Prestamos
     Route::get('/prestamos',      [PrestamoController::class, 'index'])->name('prestamos.index');
     Route::get('/prestamos/{id}', [PrestamoController::class, 'show'])->name('prestamos.show');
+    
+    //perfil
+    Route::get('/perfil', [UsuariosController::class, 'perfil'])->name('perfil');
+    Route::post('/perfil/actualizar', [UsuariosController::class, 'actualizarPerfil'])->name('perfil.actualizar');
 
     // Herramientas
     Route::prefix('herramientas')->group(function () {

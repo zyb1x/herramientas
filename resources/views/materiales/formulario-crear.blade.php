@@ -7,18 +7,18 @@
 
     <section class="bg-white dark:bg-White">
         <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16 bg-[#023047] rounded-lg shadow dark:bg-[#023047] mt-20 mb-20">
-            <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Registrar Material</h2>
+            <h2 class="mb-4 text-xl font-bold text-white">Registrar Material</h2>
             <form action="/materiales/store" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
 
                     <div class="sm:col-span-2">
                         <label for="nombre_material"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre
+                            class="block mb-2 text-sm font-medium text-white">Nombre
                             del material</label>
                         <input type="text" name="nombre_material" id="nombre_material"
                             value="{{ old('nombre_material') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('nombre_material')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else
@@ -32,9 +32,9 @@
 
                     <div class="sm:col-span-2">
                         <label for="existencia"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Existencia</label>
+                            class="block mb-2 text-sm font-medium text-white">Existencia</label>
                         <input type="number" name="existencia" id="existencia" value="{{ old('existencia') }}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            class="text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-orange-500 focus:border-primary-500"
                             @error('existencia')
                                 style="border: 1px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;"
                             @else
